@@ -50,12 +50,16 @@ public class LinkedListDeque<T> implements  Iterable<T> {
     }
 
     public void addFirst(T item) {
-        sentinel.next = new Node<>(item, sentinel.next, sentinel);
+        Node<T> new_node = new Node<>(item, sentinel.next, sentinel);
+        sentinel.next.prev = new_node;
+        sentinel.next = new_node;
         this.size += 1;
     }
 
     public void addLast(T item) {
-        sentinel.prev.next = new Node<>(item, sentinel.prev, sentinel);
+        Node<T> new_node= new Node<>(item, sentinel, sentinel.prev);
+        sentinel.prev.next =new_node;
+        sentinel.prev = new_node;
         this.size += 1;
     }
 
@@ -80,10 +84,12 @@ public class LinkedListDeque<T> implements  Iterable<T> {
         if (sentinel.next == sentinel) {
             return null;
         }
-        Node<T> curr = sentinel.next;
-        T item = curr.data;
+        Node<T> tmp = sentinel.next;
         sentinel.next = sentinel.next.next;
-        curr = null;
+        sentinel.next.prev = sentinel;
+        this.size-=1;
+        T item = tmp.data;
+        tmp=null;
         return item;
     }
 
@@ -92,9 +98,12 @@ public class LinkedListDeque<T> implements  Iterable<T> {
             return null;
         }
         Node<T> curr = sentinel.prev;
-        T item = curr.data;
         sentinel.prev = sentinel.prev.prev;
+        sentinel.prev.next = sentinel;
+
+        T item = curr.data;
         curr = null;
+        this.size -= 1;
         return item;
     }
 
@@ -103,7 +112,7 @@ public class LinkedListDeque<T> implements  Iterable<T> {
             return null;
         }else{
             Node<T> curr = sentinel.next;
-            for(int i=0;i<=index;i++){
+            for(int i=0;i<index;i++){
                 curr = curr.next;
             }
             return curr.data;
@@ -120,7 +129,8 @@ public class LinkedListDeque<T> implements  Iterable<T> {
         if(this == o){
             return true;
         }
-        if(o instanceof LinkedListDeque other){
+        if(o instanceof LinkedListDeque){
+            LinkedListDeque<T> other = (LinkedListDeque<T>) o;
             if(this.size != other.size){
                 return false;
             }else{

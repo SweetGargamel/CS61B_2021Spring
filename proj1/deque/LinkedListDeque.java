@@ -118,6 +118,19 @@ public class LinkedListDeque<T> implements  Iterable<T> {
             return curr.data;
         }
     }
+
+    public T getRecrusive(int index) {
+        return getRecursiveHelper(sentinel.next, index);
+    }
+    private T getRecursiveHelper(Node<T> node, int index){
+        if(index == 0){
+            return node.data;
+        }else{
+            getRecursiveHelper(node.next, index);
+        }
+    }
+
+
     @Override
     public Iterator<T> iterator() {
         return new ListIterator();

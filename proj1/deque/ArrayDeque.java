@@ -4,10 +4,9 @@ import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
 
-
-    protected class ArryListIterator implements Iterator<T> {
-        protected int cursor;//
-        protected int time;//记录我已经循环过的次数
+    private class ArryListIterator implements Iterator<T> {
+        private int cursor;//
+        private int time;//记录我已经循环过的次数
 
         public ArryListIterator() {
             time = 0;
@@ -22,16 +21,17 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         @Override
         public T next() {
             cursor = move_pointer(cursor,1);
+            this.time+=1;
             return (data[cursor]);
         }
     }
 
 
-    protected int size;
-    protected int capacity;
-    protected int front;
-    protected int last;
-    protected T[] data;
+    private int size;
+    private int capacity;
+    private int front;
+    private int last;
+    private T[] data;
 
     public ArrayDeque() {
         this.size = 0;
@@ -41,7 +41,7 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         data = (T[]) new Object[capacity];
     }
 
-    protected int move_pointer(int curr, int forward) {
+    private int move_pointer(int curr, int forward) {
         return (curr + forward + capacity) % capacity;
     }
     @Override
@@ -59,16 +59,13 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         last = move_pointer(last, 1);
         size++;
     }
-    @Override
 
-    public boolean isEmpty() {
-        return this.size == 0;
-    }
-    @Override
 
+    @Override
     public int size() {
-        return this.size;
+        return 0;
     }
+
     @Override
 
     public void printDeque() {
@@ -79,18 +76,18 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
         System.out.println();
     }
 
-    protected void check_Mul() {
+    private void check_Mul() {
         if (size == capacity) {
             resize(capacity * 2);
         }
     }
 
-    protected void check_Div() {
+    private void check_Div() {
         if (size * 4 < capacity && capacity >= 16) {
             resize(capacity / 4);
         }
     }
-    protected void resize(int newcapacity) {
+    private void resize(int newcapacity) {
         T [] tmp= (T[]) new Object[newcapacity];
         int index=move_pointer(front, 1);
         for (int i = 0; i < size; i++) {
@@ -149,18 +146,12 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ArrayDeque)) return false;
-        ArrayDeque<?> other = (ArrayDeque<?>) o;
-        if (size != other.size) return false;
+        if (!(o instanceof Deque)) return false;
+        Deque<?> other = (Deque<?>) o;
+        if (size != other.size()) return false;
 
-        int thisIdx = move_pointer(front, 1);
-        int otherIdx = move_pointer(other.front, 1);
-        for (int i = 0; i < size; i++) {
-            if (!data[thisIdx].equals(other.data[otherIdx])) {
-                return false;
-            }
-            thisIdx = move_pointer(thisIdx, 1);
-            otherIdx = move_pointer(otherIdx, 1);
+        for(int i=0;i<size;i++){
+            if(!this.get(i).equals(other.get(i))) return false;
         }
         return true;
     }

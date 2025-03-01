@@ -63,7 +63,7 @@ public class ArrayDeque<T> implements Iterable<T>,Deque<T> {
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override

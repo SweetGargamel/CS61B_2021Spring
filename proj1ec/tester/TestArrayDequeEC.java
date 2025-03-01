@@ -16,17 +16,19 @@ public class TestArrayDequeEC {
             if (numberBetweenZeroAndOne < 0.5) {
                 sad1.addLast(i);
                 tester.addLast(i);
+                System.out.println("addLast: "+i);
             } else {
                 sad1.addFirst(i);
                 tester.addFirst(i);
+                System.out.println("addFirst: "+i);
             }
         }
         for (int i = 0; i < 100; i += 1) {
             double numberBetweenZeroAndOne = StdRandom.uniform();
             if (numberBetweenZeroAndOne < 0.5) {
-                assertEquals("Should have the same value",sad1.removeFirst(), tester.removeFirst());
+                assertEquals("After removeFitst(),Should have the same value",sad1.removeFirst(), tester.removeFirst());
             } else {
-                assertEquals("Should have the same value",sad1.removeLast(), tester.removeLast());
+                assertEquals("After removeLast(),Should have the same value",sad1.removeLast(), tester.removeLast());
 
             }
         }

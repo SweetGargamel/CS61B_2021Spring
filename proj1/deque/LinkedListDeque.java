@@ -119,7 +119,7 @@ public class LinkedListDeque<T> implements  Iterable<T> ,Deque<T>{
         }
     }
 
-    public T getRecrusive(int index) {
+    public T getRecursive(int index) {
         return getRecursiveHelper(sentinel.next, index);
     }
     private T getRecursiveHelper(Node<T> node, int index){

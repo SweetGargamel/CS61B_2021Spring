@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayListDeque<T> implements Iterable<T> {
+public class ArrayDeque<T> implements Iterable<T> {
 
 
     private class ArryListIterator implements Iterator<T> {
@@ -32,7 +32,7 @@ public class ArrayListDeque<T> implements Iterable<T> {
     private int last;
     private T[] data;
 
-    public ArrayListDeque() {
+    public ArrayDeque() {
         this.size = 0;
         this.capacity = 8;
         this.front = capacity - 1;
@@ -133,7 +133,7 @@ public class ArrayListDeque<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ArrayListDeque.ArryListIterator();
+        return new ArrayDeque.ArryListIterator();
     }
 
 
@@ -142,8 +142,8 @@ public class ArrayListDeque<T> implements Iterable<T> {
         if (this == o) {
             return true;
         }
-        if (o instanceof ArrayListDeque) {
-            ArrayListDeque<T> other = (ArrayListDeque<T>) o;
+        if (o instanceof ArrayDeque) {
+            ArrayDeque<T> other = (ArrayDeque<T>) o;
             if (this.size != other.size) {
                 return false;
             } else if(this.capacity != other.capacity) {

@@ -8,30 +8,41 @@ import student.StudentArrayDeque;
 
 public class TestArrayDequeEC {
     @Test
-    public void testStu(){
-        StudentArrayDeque<Integer> sad1=new StudentArrayDeque<>();
-        ArrayDequeSolution<Integer> tester =new ArrayDequeSolution<>();
-        for (int i = 0; i < 100; i += 1) {
-            double numberBetweenZeroAndOne = StdRandom.uniform();
-            if (numberBetweenZeroAndOne < 0.5) {
-                sad1.addLast(i);
-                tester.addLast(i);
-                System.out.println("addLast: "+i);
-            } else {
-                sad1.addFirst(i);
-                tester.addFirst(i);
-                System.out.println("addFirst: "+i);
-            }
-        }
-        for (int i = 0; i < 100; i += 1) {
-            double numberBetweenZeroAndOne = StdRandom.uniform();
-            if (numberBetweenZeroAndOne < 0.5) {
-                assertEquals("After removeFitst(),Should have the same value",sad1.removeFirst(), tester.removeFirst());
-            } else {
-                assertEquals("After removeLast(),Should have the same value",sad1.removeLast(), tester.removeLast());
+    public void testDeque() {
+        StudentArrayDeque<Integer> st = new StudentArrayDeque<>();
+        ArrayDequeSolution<Integer> ad = new ArrayDequeSolution<>();
 
+        int n = 5000;
+        String str = "\n";
+        for (int i = 0; i < n; i++) {
+            int opt = StdRandom.uniform(0, 4);
+            if (opt == 0) {
+                // addFirst
+                int num = StdRandom.uniform(0, 100);
+                st.addFirst(num);
+                ad.addFirst(num);
+                str += "addFirst(" + num + ")\n";
+            } else if (opt == 1) {
+                // addLast
+                int num = StdRandom.uniform(0, 100);
+                st.addLast(num);
+                ad.addLast(num);
+                str += "addLast(" + num + ")\n";
+            }
+
+            if (st.isEmpty()) {
+                continue;
+            }
+
+            if (opt == 2) {
+                // removeFirst
+                str += "removeFirst()\n";
+                assertEquals(str, ad.removeFirst(), st.removeFirst());
+            } else if (opt == 3){
+                // removeLast
+                str += "removeLast()\n";
+                assertEquals(str, ad.removeLast(), st.removeLast());
             }
         }
     }
-
 }

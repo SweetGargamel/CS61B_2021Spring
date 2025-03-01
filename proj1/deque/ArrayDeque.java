@@ -8,8 +8,9 @@ public class ArrayDeque<T> implements Iterable<T> {
     private class ArryListIterator implements Iterator<T> {
         private int cursor;//
         private int time;//记录我已经循环过的次数
+
         public ArryListIterator() {
-            time=0;
+            time = 0;
             cursor = front;
         }
 
@@ -20,7 +21,7 @@ public class ArrayDeque<T> implements Iterable<T> {
 
         @Override
         public T next() {
-            cursor=(cursor+1)%capacity;
+            cursor = move_pointer(cursor,1);
             return (data[cursor]);
         }
     }
@@ -40,19 +41,21 @@ public class ArrayDeque<T> implements Iterable<T> {
         data = (T[]) new Object[capacity];
     }
 
+    private int move_pointer(int curr, int forward) {
+        return (curr + forward + capacity) % capacity;
+    }
 
     public void addFirst(T item) {
-        resize_bigger();
+        check_Mul();
         data[front] = item;
-        front= (front -1)%capacity;
+        front = move_pointer(front, -1);
         size++;
     }
 
     public void addLast(T item) {
-        resize_bigger();
-
+        check_Mul();
         data[last] = item;
-        last =(last + 1)%capacity;
+        last = move_pointer(last, 1);
         size++;
     }
 
@@ -65,70 +68,70 @@ public class ArrayDeque<T> implements Iterable<T> {
     }
 
     public void printDeque() {
-        int p=front+1;
-        for(int i=0;i<size;i++,p=(p+1)%capacity) {
-            System.out.print(data[p]+" ");
+        int p = front + 1;
+        for (int i = 0; i < size; i++, p = move_pointer(p, 1)) {
+            System.out.print(data[p] + " ");
+        }
+        System.out.println();
+    }
+
+    private void check_Mul() {
+        if (size == capacity) {
+            resize(capacity * 2);
         }
     }
 
-    private void resize_bigger() {
-        if(size<capacity){
-            return;
+    private void check_Div() {
+        if (size * 4 < capacity && capacity >= 16) {
+            resize(capacity / 4);
         }
+    }
 
-        int new_capacity = capacity*2;
-        T tmp[]=(T[]) new Object[new_capacity];
-        for(int i=0;i<last;i++){
-            tmp[i]=data[i];
+    private void resize(int newcapacity) {
+        T [] tmp= (T[]) new Object[newcapacity];
+        int index=move_pointer(front, 1);
+        for (int i = 0; i < size; i++) {
+            tmp[i]=data[index];
+            index = move_pointer(index, 1);
         }
-        for(int i=capacity-1;i>front;i--){
-            tmp[i+capacity]=data[i];
-        }
-        capacity = new_capacity;
         data=tmp;
-    }
-    private void resize_smaller() {
-        if(size*4<capacity && capacity>=16){
-            int new_capacity = capacity/4;
-            T tmp[]=(T[]) new Object[capacity];
-            for(int i=0;i<last;i++){
-                tmp[i]=data[i];
-            }
-            for(int i=capacity-1;i>front;i--){
-                tmp[i-new_capacity*3]=data[i];
-            }
-        }
+        front = newcapacity-1;
+        capacity=newcapacity;
+        last=size;
     }
 
 
     public T removeFirst() {
-        if(size==0){
+        if (size == 0) {
             return null;
         }
-        resize_smaller();
-
-        T item=data[(front+1)%capacity];
-        front++;
+        check_Div();
+        front = move_pointer(front, +1);
+        T item = data[front];
+        data[front] = null;
         size--;
         return item;
     }
 
     public T removeLast() {
-      if(size==0){
-          return null;
-      }
-      resize_smaller();
-      T item=data[(last-1)%capacity];
-      last--;
-      size--;
-      return item;
+        if (size == 0) {
+            return null;
+        }
+        check_Div();
+
+
+        last = move_pointer(last, -1);
+        T item = data[last];
+        data[last] = null;
+        size--;
+        return item;
     }
 
     public T get(int index) {
-        int p=front;
-
-        for (int i=0;i<=index;i++,p=(p+1)%capacity);
-        return data[p];
+//        int p = front;
+//        p=  move_pointer(p, 1);
+//        for (int i = 0; i <= index; i++, p = move_pointer(p, 1)) {} ;
+        return data[(front + 1 + index) % data.length];
     }
 
     @Override
@@ -139,26 +142,21 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o instanceof ArrayDeque) {
-            ArrayDeque<T> other = (ArrayDeque<T>) o;
-            if (this.size != other.size) {
+        if (this == o) return true;
+        if (!(o instanceof ArrayDeque)) return false;
+        ArrayDeque<?> other = (ArrayDeque<?>) o;
+        if (size != other.size) return false;
+
+        int thisIdx = move_pointer(front, 1);
+        int otherIdx = move_pointer(other.front, 1);
+        for (int i = 0; i < size; i++) {
+            if (!data[thisIdx].equals(other.data[otherIdx])) {
                 return false;
-            } else if(this.capacity != other.capacity) {
-                return false;
-            }else{
-                int p=front+1;
-                for(int i=0;i<size;i++,p=(p+1)%capacity) {
-                    if (this.data[p] != other.data[p]) {
-                        return false;
-                    }
-                }
-                return true;
             }
+            thisIdx = move_pointer(thisIdx, 1);
+            otherIdx = move_pointer(otherIdx, 1);
         }
-        return false;
+        return true;
     }
 
 }

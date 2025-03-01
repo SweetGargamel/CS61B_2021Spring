@@ -126,8 +126,9 @@ public class LinkedListDeque<T> implements  Iterable<T> {
         if(index == 0){
             return node.data;
         }else{
-            getRecursiveHelper(node.next, index);
+            return getRecursiveHelper(node.next, index);
         }
+
     }
 
 

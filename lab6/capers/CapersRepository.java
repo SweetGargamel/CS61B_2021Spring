@@ -79,6 +79,5 @@ public class CapersRepository {
     public static void celebrateBirthday(String name) {
         Dog d1 =Dog.fromFile(name);
         d1.haveBirthday();
-        System.out.println(d1);
     }
 }

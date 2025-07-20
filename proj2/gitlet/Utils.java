@@ -63,6 +63,13 @@ class Utils {
         return sha1(vals.toArray(new Object[vals.size()]));
     }
 
+
+    static String getFileSha1(String filename) {
+        return getFileSha1(new File(filename));
+    }
+    static String getFileSha1(File file) {
+        return Utils.sha1(Utils.readContents(file),file.getName());
+    }
     /* FILE DELETION */
 
     /** Deletes FILE if it exists and is not a directory.  Returns true
@@ -110,6 +117,14 @@ class Utils {
     static String readContentsAsString(File file) {
         return new String(readContents(file), StandardCharsets.UTF_8);
     }
+    static String readContentsAsString(String file) {return readContentsAsString(new File(file));}
+
+    static String readContentOfBlobs(String fileSha1) {
+        File file = join(Repository.BLOB_DIR, fileSha1.substring(0, 2), fileSha1.substring(2));
+        return readContentsAsString(file);
+    }
+
+
 
     /** Write the result of concatenating the bytes in CONTENTS to FILE,
      *  creating or overwriting it as needed.  Each object in CONTENTS may be
@@ -203,6 +218,20 @@ class Utils {
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();
     }
+
+    /**
+     * Helper function for copy file
+     * @param sourcePath
+     * @param destinationPath
+     */
+    static void copyFile(File sourcePath,File destinationPath){
+        try {
+            Files.copy(sourcePath.toPath(), destinationPath.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
     /* SERIALIZATION UTILITIES */

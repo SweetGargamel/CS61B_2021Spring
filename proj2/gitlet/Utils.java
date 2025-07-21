@@ -229,12 +229,20 @@ class Utils {
      */
     static void copyFile(File sourcePath,File destinationPath){
         try {
-            Files.copy(sourcePath.toPath(), destinationPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            if(destinationPath.exists()){
+                return;
+            }
+            Files.copy(sourcePath.toPath(), destinationPath.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
+    static void copyFile_WithSha1Name(File sourceBlobDir,File destinationBlobDir, String sourceSha1,String destinationSha1){
+        File sourceFileDir = join(sourceBlobDir,sourceSha1.substring(0, 2));
+        File destinationFileDir = join(destinationBlobDir,destinationSha1.substring(0, 2));
+        copyFile(join(sourceFileDir,sourceSha1.substring(2)),
+                join(destinationFileDir,destinationSha1.substring(2)));
+    }
 
 
     /* SERIALIZATION UTILITIES */

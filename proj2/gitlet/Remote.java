@@ -1,7 +1,10 @@
 package gitlet;
 
+import jh61b.junit.In;
+
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class Remote implements Dumpable{
     public String remote_name;
@@ -37,6 +40,35 @@ public class Remote implements Dumpable{
     }
     public static List<String> getAllRemotes()  {
         return Utils.plainFilenamesIn(Repository.REMOTE_DIR);
+    }
+
+    public static Branch getRemoteBranch(String remote_name)  {
+        try{
+            return Utils.readObject(Utils.join(Repository.REMOTE_DIR,remote_name),Branch.class);
+        }catch(Exception e){
+            return null;
+        }
+    }
+    public static void pushFromLoaclToRemote
+            (String start_sha1,String end_sha1,String local_commit_dir,String remote_commit_dir){
+            try {
+                Commit end = Commit.getCommit(end_sha1);
+                Commit start = Commit.getCommit(start_sha1);
+                Map<String, Integer> path = Commit.getPathToTargetCommit(start,end);
+                Integer last_layer = path.get(end_sha1);
+                for(String commit: path.keySet()){
+                    if(last_layer.equals(path.get(commit)) && !commit.equals(end_sha1)){
+                        continue;
+                    }
+                    Commit curr_commit = Commit.getCommit(commit);
+                    for(String file_sha1: curr_commit.getSnapshot().keySet()){
+                        Utils.
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
     }
 
 

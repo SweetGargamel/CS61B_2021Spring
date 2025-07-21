@@ -2,6 +2,8 @@ package gitlet;
 
 // TODO: any imports you need here
 
+import afu.org.checkerframework.checker.igj.qual.I;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -261,12 +263,49 @@ public class Commit implements Dumpable {
         return null;
     }
 
+    /**
+     *
+     * @param start_commit
+     * @param Target_UID
+     * @return
+     */
+    public static Map<String, Integer> getPathToTargetCommit(Commit start_commit,Commit end_commit){
+        Map<String, Integer> paths = new HashMap<>();
+        Queue<String> queue = new ArrayDeque<>();
+        queue.add(start_commit.getUID());
+        String curr_UID = start_commit.getUID();
+        paths.put(start_commit.getUID(), 0);
+
+        while (!queue.isEmpty()) {
+            curr_UID = queue.poll();
+            Commit curr_commit = null;
+            try {
+                curr_commit = Commit.getCommit(curr_UID);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            for(String com : curr_commit.getParents()){
+                if(com.equals( end_commit.getUID())){
+                    return paths;
+                }
+                if(paths.containsKey(com)){
+                    continue;
+                }else{
+                    paths.put(com, paths.get(curr_UID) + 1);
+                }
+                queue.add(com);
+            }
+
+        }
+        return paths;
+    }
+
     public static Map<String, Integer> getPathToInit(Commit commit) {
-        Map<String, Integer> pathToInit = new HashMap<>();
+        Map<String, Integer> paths = new HashMap<>();
         Queue<String> queue = new ArrayDeque<>();
         queue.add(commit.getUID());
         String curr_UID = commit.getUID();
-        pathToInit.put(commit.getUID(), 0);
+        paths.put(commit.getUID(), 0);
 
         while (!queue.isEmpty()) {
             curr_UID = queue.poll();
@@ -278,17 +317,17 @@ public class Commit implements Dumpable {
             }
             for(String com : curr_commit.getParents()){
                 if(com == ""){
-                    break;
+                    return paths;
                 }
-                if(pathToInit.containsKey(com)){
+                if(paths.containsKey(com)){
                     continue;
                 }else{
-                    pathToInit.put(com, pathToInit.get(curr_UID) + 1);
+                    paths.put(com, paths.get(curr_UID) + 1);
                 }
                 queue.add(com);
             }
         }
-        return pathToInit;
+        return paths;
 
     }
     public void printCommit(){

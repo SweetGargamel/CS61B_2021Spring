@@ -26,24 +26,24 @@ public class Repository {
     /**
      * The current working directory.
      */
-    public static final File CWD = new File(System.getProperty("user.dir"));
+    public static File CWD = new File(System.getProperty("user.dir"));
     /**
      * The .gitlet directory.
      */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
+    public static File GITLET_DIR = join(CWD, ".gitlet");
     /**
      * The HEAD Path and Stage Path
      */
-    public static final File HEAD_FILE = join(GITLET_DIR, "HEAD");
-    public static final File STAGE_FILE = join(GITLET_DIR, "STAGE");
-    public static final File BRANCH_FILE = join(GITLET_DIR, "BRANCH");
+    public static File HEAD_FILE = join(GITLET_DIR, "HEAD");
+    public static File STAGE_FILE = join(GITLET_DIR, "STAGE");
+    public static File BRANCH_FILE = join(GITLET_DIR, "BRANCH");
     /**
      * The Blob path and the commit path
      */
-    public static final File COMMIT_DIR = join(GITLET_DIR, "COMMIT");
-    public static final File BLOB_DIR = join(GITLET_DIR, "BLOB");
-    public static final File REFS_DIR = join(GITLET_DIR, "REFS");
-    public static final File REMOTE_DIR = join(GITLET_DIR, "REMOTE");
+    public static File COMMIT_DIR = join(GITLET_DIR, "COMMIT");
+    public static File BLOB_DIR = join(GITLET_DIR, "BLOB");
+    public static File REFS_DIR = join(GITLET_DIR, "REFS");
+    public static File REMOTE_DIR = join(GITLET_DIR, "REMOTE");
 
     /**
      * The HEAD varivable stores the HEAD sha-1 ID
@@ -59,6 +59,24 @@ public class Repository {
      */
     private Stage stage;
     private String now_branch;
+
+    public static void changeWorkingDirectory(String cwdPath) {
+        CWD = new File(cwdPath);
+        GITLET_DIR = join(CWD, ".gitlet");
+        /**
+         * The HEAD Path and Stage Path
+         */
+        HEAD_FILE = join(GITLET_DIR, "HEAD");
+        STAGE_FILE = join(GITLET_DIR, "STAGE");
+        BRANCH_FILE = join(GITLET_DIR, "BRANCH");
+        /**
+         * The Blob path and the commit path
+         */
+        COMMIT_DIR = join(GITLET_DIR, "COMMIT");
+        BLOB_DIR = join(GITLET_DIR, "BLOB");
+        REFS_DIR = join(GITLET_DIR, "REFS");
+        REMOTE_DIR = join(GITLET_DIR, "REMOTE");
+    }
 
     public Repository() {
         if (GITLET_DIR.exists()) {
@@ -77,15 +95,18 @@ public class Repository {
     public static String getHEAD(File headFile) {
         return readContentsAsString(headFile);
     }
+
     public static String getHEAD() {
-        return readContentsAsString(HEAD_FILE);
+        return getHEAD(HEAD_FILE);
+    }
+
+    public static String getBranch(File headFile) {
+        return readContentsAsString(headFile);
     }
 
     public static String getBranch() {
-        return readContentsAsString(BRANCH_FILE);
+        return getBranch(BRANCH_FILE);
     }
-
-
 
 
     /**
@@ -254,8 +275,8 @@ public class Repository {
 
         for (String filename : curr_commit.getSnapshot().keySet()) {
             File file = new File(filename);
-            if (!file.exists() ) {
-                if(!this.stage.isStagedInRemove(filename)){
+            if (!file.exists()) {
+                if (!this.stage.isStagedInRemove(filename)) {
                     Modified_Not_Staged.add(filename + " (deleted)");
                 }
             } else {
@@ -266,8 +287,8 @@ public class Repository {
         }
         for (String filename : this.stage.getAddStage().keySet()) {
             File file = new File(filename);
-            if (!file.exists() ) {
-                if(!this.stage.isStagedInRemove(filename)){
+            if (!file.exists()) {
+                if (!this.stage.isStagedInRemove(filename)) {
                     Modified_Not_Staged.add(filename + " (deleted)");
                 }
             } else {
@@ -376,7 +397,7 @@ public class Repository {
 
         checkout_to_target_Commit(target_commit);
         this.now_branch = branch_name;
-        this.HEAD =target_branch.ref_UID;
+        this.HEAD = target_branch.ref_UID;
         saveToFile();
 
     }
@@ -393,7 +414,7 @@ public class Repository {
     }
 
     private void checkout_to_target_Commit(Commit target_commit) {
-        validateHasUntrackedFilesConfilt(HEAD,target_commit.getSnapshot().keySet());
+        validateHasUntrackedFilesConfilt(HEAD, target_commit.getSnapshot().keySet());
         Commit curr_commit = null;
         try {
             curr_commit = Commit.getCommit(HEAD);
@@ -565,7 +586,7 @@ public class Repository {
         //检测是否有Untrack的
         for (String untracked_file : getUntrackedFiles(HEAD)) {
             if (all_related_files.keySet().contains(untracked_file)) {
-                if(!another_commit.hasFileTracked(untracked_file)) {
+                if (!another_commit.hasFileTracked(untracked_file)) {
                     continue;
                 }
                 System.out.println(
@@ -574,46 +595,46 @@ public class Repository {
             }
         }
 
-        boolean isConfilt=false;
-        for(Map.Entry<String,String> entry: all_related_files.entrySet()) {
+        boolean isConfilt = false;
+        for (Map.Entry<String, String> entry : all_related_files.entrySet()) {
             String filename = entry.getKey();
             String content = entry.getValue();
             //confilt
-            if(content.startsWith("<<<<<")){
-                isConfilt=true;
-                Utils.writeContents(Utils.join(CWD,filename),content);
-                this.stage.putAddStage(filename,HEAD);
-            }
-            else if(content.equals("")){
+            if (content.startsWith("<<<<<")) {
+                isConfilt = true;
+                Utils.writeContents(Utils.join(CWD, filename), content);
+                this.stage.putAddStage(filename, HEAD);
+            } else if (content.equals("")) {
                 this.stage.putRemoveStage(filename);
                 Utils.restrictedDelete(filename);
-            }else if(content.equals("Nothing")){
+            } else if (content.equals("Nothing")) {
                 continue;
-            }else{
-                restoreFilesToWorking(filename,content);
-                this.stage.putAddStage(filename,HEAD);
+            } else {
+                restoreFilesToWorking(filename, content);
+                this.stage.putAddStage(filename, HEAD);
             }
         }
-        String msg="Merged "+another_branch+" into"+this.now_branch;
-        Commit merge_commit_instance = new Commit(msg,this.HEAD,another_commit.getUID(),this.stage);
+        String msg = "Merged " + another_branch + " into" + this.now_branch;
+        Commit merge_commit_instance = new Commit(msg, this.HEAD, another_commit.getUID(), this.stage);
         this.stage.clear();
         this.HEAD = merge_commit_instance.getUID();
         Branch curr_branch = Branch.get_Branch(this.now_branch);
         curr_branch.updateUID(this.HEAD);
         System.out.println(msg);
-        if(isConfilt){
+        if (isConfilt) {
             System.out.println("Encountered a merge conflict.");
         }
 
         saveToFile();
 
     }
-    public void add_remote(String remote_name,String name_of_the_directroy){
-        Remote new_remote = new Remote(remote_name,name_of_the_directroy);
+
+    public void add_remote(String remote_name, String name_of_the_directroy) {
+        Remote new_remote = new Remote(remote_name, name_of_the_directroy);
 
     }
 
-    public void rm_remote(String remote_name){
+    public void rm_remote(String remote_name) {
         Remote target_remote = null;
         try {
             target_remote = Remote.getRemote(remote_name);
@@ -623,20 +644,43 @@ public class Repository {
         target_remote.remove_self();
     }
 
-    public void push(String remote_name,String branch_name){
+    public void push(String remote_name, String branch_name) {
+        changeWorkingDirectory(System.getProperty("user.dir"));
         Remote target_remote = null;
         try {
             target_remote = Remote.getRemote(remote_name);
         } catch (Exception e) {
+            System.out.println("Remote directory not found.");
+            System.exit(0);
+        }
+
+        Commit local_curr_commit = null;
+        try {
+            local_curr_commit = Commit.getCommit(this.HEAD);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        File target_gitlet_dir = new File(target_remote.remote_path);
-        if(!target_gitlet_dir.exists()){
+        Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
+        //切换到远程分支
+        File currBlobDir = BLOB_DIR;
+        changeWorkingDirectory(target_remote.remote_path);
+
+        if (!GITLET_DIR.exists()) {
             System.out.println("Remote directory not found.");
+            System.exit(0);
         }
-        Repository.getBranch();
+        if(! LoaclpathToInit.keySet().contains(getHEAD())){
+            System.out.println("Please pull down remote changes before pushing.");
+            System.exit(0);
+        }
+        File remoteBlobDir = BLOB_DIR;
+
+
+
+
 
     }
+
     /**
      * Save the current status of Repository
      */

@@ -182,7 +182,7 @@ public class Repository {
                 String par2 = parent_arr[1];
                 System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
             }
-            System.out.println("Date: " + curr_commit.getFormatedDate());
+            System.out.println(curr_commit.getFormatedDate());
             System.out.println(curr_commit.getMessage());
             System.out.println();
             curr_UID = (String) curr_commit.getParents().toArray()[0];
@@ -490,8 +490,8 @@ public class Repository {
             System.exit(0);
         }
         if (split_commit.equals(this.HEAD)) {
-            System.out.println("Current branch fast-forwarded.");
             checkout_3(another_branch);
+            System.out.println("Current branch fast-forwarded.");
             System.exit(0);
         }
 
@@ -559,22 +559,51 @@ public class Repository {
             //case8 合并冲突
             else {
                 String new_content = "<<<<<<< HEAD\n"
-                        + Utils.readContentOfBlobs(curr_commit.getUID())
-                        + "=======" + Utils.readContentOfBlobs(another_commit.getUID())
+                        + Utils.readContentOfBlobs(curr_file_sha1)
+                        + "=======" + Utils.readContentOfBlobs(another_file_sha1)
                         + ">>>>>>>";
                 all_related_files.put(filename, new_content);
             }
         }
-        validateHasUntrackedFilesConfilt(HEAD,all_related_files.keySet());
-        boolean isConfilt=false;
-        for(Map.Entry<String,String> entry: all_related_files.entrySet()) {
-            String value = entry.getValue();
-            //confilt
-            if(value.startsWith("<<<<<<<")){
-                isConfilt=true;
-                Utils.writeContents(Utils.join(CWD,entry.getKey()),value);
+        //检测是否有Untrack的
+        for (String untracked_file : getUntrackedFiles(HEAD)) {
+            if (all_related_files.keySet().contains(untracked_file)) {
+                if(!another_commit.hasFileTracked(untracked_file)) {
+                    continue;
+                }
+                System.out.println(
+                        "There is an untracked file in the way; delete it, or add and commit it first.");
+                System.exit(0);
             }
         }
+
+        boolean isConfilt=false;
+        for(Map.Entry<String,String> entry: all_related_files.entrySet()) {
+            String filename = entry.getKey();
+            String content = entry.getValue();
+            //confilt
+            if(content.startsWith("<<<<<")){
+                isConfilt=true;
+                Utils.writeContents(Utils.join(CWD,filename),content);
+                this.stage.putAddStage(filename,HEAD);
+            }
+            else if(content.equals("")){
+                this.stage.putRemoveStage(filename);
+                Utils.restrictedDelete(filename);
+            }else if(content.equals("Nothing")){
+                continue;
+            }else{
+                restoreFilesToWorking(filename,content);
+                this.stage.putAddStage(filename,HEAD);
+            }
+        }
+        String msg="Merged "+another_branch+" into"+this.now_branch;
+        Commit merge_commit_instance = new Commit(msg,this.HEAD,another_commit.getUID(),this.stage);
+        this.stage.clear();
+        this.HEAD = merge_commit_instance.getUID();
+        Branch curr_branch = Branch.get_Branch(this.now_branch);
+        curr_branch.updateUID(this.HEAD);
+        System.out.println(msg);
         if(isConfilt){
             System.out.println("Encountered a merge conflict.");
         }

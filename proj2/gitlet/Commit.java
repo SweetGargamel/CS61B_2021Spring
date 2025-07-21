@@ -61,6 +61,27 @@ public class Commit implements Dumpable {
         this.parents = new ArrayList<>();
         this.parents.add(parent);
         this.snapshot = Commit.getParentCommit(parent).snapshot;
+
+        for (String key : stage.getAddStage().keySet()) {
+            this.snapshot.put(key, stage.getAddStage().get(key));
+        }
+        for (String key : stage.getRemoveStage()) {
+            this.snapshot.remove(key);
+        }
+        this.date = new Date();
+        this.UID = Utils.sha1(this.message, this.parents.toString(), this.snapshot.toString(), this.date.toString());
+        this.dump();
+    }
+    /**
+     *
+     * for merge commit
+     */
+    public Commit(String message,String parent1,String parent2,Stage stage) {
+        this.message = message;
+        this.parents = new ArrayList<>();
+        this.parents.add(parent1);
+        this.parents.add(parent2);
+        this.snapshot = Commit.getParentCommit(parent1).snapshot;
         for (String key : stage.getAddStage().keySet()) {
             this.snapshot.put(key, stage.getAddStage().get(key));
         }
@@ -85,6 +106,8 @@ public class Commit implements Dumpable {
         this.UID = Utils.sha1(this.message, this.parents.toString(), this.snapshot.toString(), this.date.toString());
         this.dump();
     }
+
+
 
 
     public String getMessage() {
@@ -184,7 +207,7 @@ public class Commit implements Dumpable {
     private static Commit getCommitWithFullSha1(String UID) throws FileNotFoundException {
         if (UID.length() == Utils.UID_LENGTH) {
             return Utils.readObject(Utils.join(Repository.COMMIT_DIR, UID), Commit.class);
-        }else{
+        } else {
             throw new FileNotFoundException();
         }
     }
@@ -215,34 +238,62 @@ public class Commit implements Dumpable {
         return !this.snapshot.get(filename).equals(Utils.getFileSha1(filename));
     }
 
-    public static String find_split_commit(Commit commit1,Commit commit2) {
-        Set<String> ancestors = new HashSet<>();
-        String current_commit_sha1 = commit1.getUID();
-
-        while(current_commit_sha1!="" ) {
-            Commit curr_commit= null;
+    public static String find_split_commit(Commit commit1, Commit commit2) {
+        Map<String,Integer> comm1_toInit = getPathToInit(commit1);
+        Queue<String> queue = new ArrayDeque<>();
+        queue.add(commit2.getUID());
+        String curr_UID = commit2.getUID();
+        while (!queue.isEmpty()) {
+            curr_UID = queue.poll();
+            if(comm1_toInit.containsKey(curr_UID)) {
+                return curr_UID;
+            }
+            Commit curr_commit = null;
             try {
-                curr_commit = Commit.getCommit(current_commit_sha1);
+                curr_commit = Commit.getCommit(curr_UID);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            ancestors.add(curr_commit.getUID());
-            current_commit_sha1 = curr_commit.getParents().get(0);
-        }
-
-        current_commit_sha1 = commit2.getUID();
-        while(!ancestors.contains(current_commit_sha1)) {
-            Commit curr_commit= null;
-            try {
-                curr_commit = Commit.getCommit(current_commit_sha1);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            for(String com : curr_commit.getParents()){
+                queue.add(com);
             }
-            current_commit_sha1 = curr_commit.getParents().get(0);
         }
-        return current_commit_sha1;
+        return null;
     }
+
+    public static Map<String, Integer> getPathToInit(Commit commit) {
+        Map<String, Integer> pathToInit = new HashMap<>();
+        Queue<String> queue = new ArrayDeque<>();
+        queue.add(commit.getUID());
+        String curr_UID = commit.getUID();
+        pathToInit.put(commit.getUID(), 0);
+
+        while (!queue.isEmpty()) {
+            curr_UID = queue.poll();
+            Commit curr_commit = null;
+            try {
+                curr_commit = Commit.getCommit(curr_UID);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            for(String com : curr_commit.getParents()){
+                if(com == ""){
+                    break;
+                }
+                if(pathToInit.containsKey(com)){
+                    continue;
+                }else{
+                    pathToInit.put(com, pathToInit.get(curr_UID) + 1);
+                }
+                queue.add(com);
+            }
+        }
+        return pathToInit;
+
+    }
+
+
     public String getTrackedFileSha1(String filename) {
-        return this.snapshot.getOrDefault(filename,"");
+        return this.snapshot.getOrDefault(filename, "");
     }
 }

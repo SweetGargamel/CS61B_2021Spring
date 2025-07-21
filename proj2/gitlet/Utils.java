@@ -120,7 +120,8 @@ class Utils {
     static String readContentsAsString(String file) {return readContentsAsString(new File(file));}
 
     static String readContentOfBlobs(String fileSha1) {
-        File file = join(Repository.BLOB_DIR, fileSha1.substring(0, 2), fileSha1.substring(2));
+        File dir_path = join(Repository.BLOB_DIR, fileSha1.substring(0, 2));
+        File file = join(dir_path,fileSha1.substring(2));
         return readContentsAsString(file);
     }
 

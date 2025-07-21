@@ -106,6 +106,11 @@ public class Main {
         } else if (args.length == 1) {
             System.out.println("Please enter a commit message.");
             System.exit(0);
+        } else if (args.length == 2) {
+            if(args[1].equals("")) {
+                System.out.println("Please enter a commit message.");
+                System.exit(0);
+            }
         }
     }
 

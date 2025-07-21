@@ -119,6 +119,7 @@ public class Repository {
 
     public void commit(String commitMessage) {
         this.validateIsInitialized();
+
         if (this.stage.getRemoveStage().isEmpty() && this.stage.getAddStage().isEmpty()) {
             System.out.println("No changes added to the commit. ");
             System.exit(0);
@@ -137,11 +138,7 @@ public class Repository {
     public void rm(String filename) {
         this.validateIsInitialized();
         File rmFile = new File(CWD, filename);//Create the fileInstance
-        //Corner Case1: no such file
-        if (!rmFile.exists()) {
-            System.out.println("No reason to remove the file.");
-            System.exit(0);
-        }
+
         //Corner Case2 : not staged or commited
         Commit HEAD_commit = null;
         try {
@@ -149,7 +146,14 @@ public class Repository {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+
         if (!this.stage.isStagedInAdd(filename) && !HEAD_commit.hasFileTracked(filename)) {
+            System.out.println("No reason to remove the file.");
+            System.exit(0);
+        }
+        //Corner Case1: no such file
+
+        if (!rmFile.exists()) {
             System.out.println("No reason to remove the file.");
             System.exit(0);
         }
@@ -174,17 +178,7 @@ public class Repository {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("===");
-            System.out.println("commit " + curr_UID);
-            if (curr_commit.isMergeCommit()) {
-                String[] parent_arr = (String[]) curr_commit.getParents().toArray();
-                String par1 = parent_arr[0];
-                String par2 = parent_arr[1];
-                System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
-            }
-            System.out.println(curr_commit.getFormatedDate());
-            System.out.println(curr_commit.getMessage());
-            System.out.println();
+            curr_commit.printCommit();
             curr_UID = (String) curr_commit.getParents().toArray()[0];
         }
     }
@@ -193,28 +187,19 @@ public class Repository {
         validateIsInitialized();
 
         for (String commit_UID : Commit.getAllCommits()) {
-            System.out.println("===");
-            System.out.println("commit " + commit_UID);
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(commit_UID);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            if (curr_commit.isMergeCommit()) {
-                String[] parent_arr = (String[]) curr_commit.getParents().toArray();
-                String par1 = parent_arr[0];
-                String par2 = parent_arr[1];
-                System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
-            }
-            System.out.println("Date: " + curr_commit.getFormatedDate());
-            System.out.println(curr_commit.getMessage());
-            System.out.println();
+            curr_commit.printCommit();
         }
     }
 
     public void find(String target_msg) {
-        for (String commit_UID : Utils.plainFilenamesIn(COMMIT_DIR)) {
+        boolean found = false;
+        for (String commit_UID : Commit.getAllCommits()) {
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(commit_UID);
@@ -223,8 +208,13 @@ public class Repository {
             }
             if (target_msg.equals(curr_commit.getMessage())) {
                 System.out.println(commit_UID);
+                found = true;
             }
         }
+        if (!found) {
+            System.out.println("Found no commit with that message.");
+        }
+
     }
 
     public void status() {
@@ -261,8 +251,10 @@ public class Repository {
 
         for (String filename : curr_commit.getSnapshot().keySet()) {
             File file = new File(filename);
-            if (!file.exists()) {
-                Modified_Not_Staged.add(filename + " (deleted)");
+            if (!file.exists() ) {
+                if(!this.stage.isStagedInRemove(filename)){
+                    Modified_Not_Staged.add(filename + " (deleted)");
+                }
             } else {
                 if (!this.stage.isStagedInAdd(filename) && curr_commit.TrackedAButDiffer(filename)) {
                     Modified_Not_Staged.add(filename + " (modified)");
@@ -271,8 +263,10 @@ public class Repository {
         }
         for (String filename : this.stage.getAddStage().keySet()) {
             File file = new File(filename);
-            if (!file.exists()) {
-                Modified_Not_Staged.add(filename + " (deleted)");
+            if (!file.exists() ) {
+                if(!this.stage.isStagedInRemove(filename)){
+                    Modified_Not_Staged.add(filename + " (deleted)");
+                }
             } else {
                 if (this.stage.StagedInAddButDiffer(filename)) {
                     Modified_Not_Staged.add(filename + " (modified)");
@@ -379,6 +373,7 @@ public class Repository {
 
         checkout_to_target_Commit(target_commit);
         this.now_branch = branch_name;
+        this.HEAD =target_branch.ref_UID;
         saveToFile();
 
     }
@@ -423,7 +418,6 @@ public class Repository {
     public void branch(String new_branch) {
         validateIsInitialized();
         Branch branch = new Branch(new_branch, HEAD);
-        this.now_branch = new_branch;
         saveToFile();
     }
 

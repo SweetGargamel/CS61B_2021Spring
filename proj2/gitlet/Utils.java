@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -86,6 +87,7 @@ class Utils {
             return false;
         }
     }
+
 
     /** Deletes the file named FILE if it exists and is not a directory.
      *  Returns true if FILE was deleted, and false otherwise.  Refuses
@@ -227,7 +229,7 @@ class Utils {
      */
     static void copyFile(File sourcePath,File destinationPath){
         try {
-            Files.copy(sourcePath.toPath(), destinationPath.toPath());
+            Files.copy(sourcePath.toPath(), destinationPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

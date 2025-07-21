@@ -6,15 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="proj2" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Backup" target="14" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Backup" options="-J-XX:+ShowCodeDetailsInExceptionMessages" />
       <module name="proj2" options="-J-XX:+ShowCodeDetailsInExceptionMessages" />
     </option>
   </component>

@@ -291,7 +291,19 @@ public class Commit implements Dumpable {
         return pathToInit;
 
     }
-
+    public void printCommit(){
+        System.out.println("===");
+        System.out.println("commit " + this.UID);
+        if (this.isMergeCommit()) {
+            String[] parent_arr = (String[]) this.getParents().toArray();
+            String par1 = parent_arr[0];
+            String par2 = parent_arr[1];
+            System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
+        }
+        System.out.println(this.getFormatedDate());
+        System.out.println(this.getMessage());
+        System.out.println();
+    }
 
     public String getTrackedFileSha1(String filename) {
         return this.snapshot.getOrDefault(filename, "");

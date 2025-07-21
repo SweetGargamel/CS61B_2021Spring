@@ -46,7 +46,7 @@ public class Branch implements Dumpable{
     public static void removeBranch(String branch_name) {
         File branch_path=Utils.join(Repository.REFS_DIR,branch_name);
         if(branch_path.exists()){
-            Utils.restrictedDelete(branch_path);
+            branch_path.delete();
         }
     }
     public void updateUID(String uid) {

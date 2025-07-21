@@ -14,10 +14,6 @@
     <groupId>CS61B</groupId>
     <artifactId>proj2</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>Backup</module>
-    </modules>
 
     <build>
         <sourceDirectory>${project.basedir}</sourceDirectory>

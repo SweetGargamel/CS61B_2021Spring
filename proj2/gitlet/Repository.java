@@ -163,7 +163,6 @@ public class Repository {
         //Case 1: when is Staged,the remove it from addstage
         if (this.stage.isStagedInAdd(filename)) {
             this.stage.removeFromAddStage(filename);
-            this.stage.putRemoveStage(filename);
         }
         //Case2 : Tracked
         if (HEAD_commit.hasFileTracked(filename)) {

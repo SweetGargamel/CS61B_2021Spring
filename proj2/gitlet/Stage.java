@@ -43,21 +43,19 @@ public class Stage implements Dumpable {
         //To validate if the file exists in the working directory
         File added_fileInstance = new File(Repository.CWD, added_filename);
 
-        //CASE0:Already in removeStage
-        if (isStagedInRemove(added_filename)) {
-            removeFromRemoveStage(added_filename);
-        }
-
         // CASE1: File does not exist.
-        if (!added_fileInstance.exists()
-//                && !this.addStage.containsKey(added_filename)
-//                && !this.removeStage.containsKey(added_filename)
-//                && !HEAD_Commit.snapshot.containsKey(added_filename)
+        if (!added_fileInstance.exists() && !this.isStagedInRemove(added_filename)
         ) {
             System.out.println("File does not exist.");
             System.exit(0);
         }
+        //CASE0:Already in removeStage
 
+        if (isStagedInRemove(added_filename)) {
+            removeFromRemoveStage(added_filename);
+            this.dump();
+            System.exit(0);
+        }
         //calculate the sha1 of the file in working directory
         String added_file_sha1 = Utils.getFileSha1(added_fileInstance);
         //CASE2:if is staged and the added file is not changed

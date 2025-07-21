@@ -172,7 +172,7 @@ public class Commit implements Dumpable {
         Commit parent_Commit = null;
         try {
             parent_Commit = getCommit(ParentUID);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return parent_Commit;
@@ -251,7 +251,7 @@ public class Commit implements Dumpable {
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(curr_UID);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             for(String com : curr_commit.getParents()){
@@ -273,7 +273,7 @@ public class Commit implements Dumpable {
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(curr_UID);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             for(String com : curr_commit.getParents()){

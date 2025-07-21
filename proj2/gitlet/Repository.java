@@ -74,13 +74,18 @@ public class Repository {
         }
     }
 
-    private static String getHEAD() {
+    public static String getHEAD(File headFile) {
+        return readContentsAsString(headFile);
+    }
+    public static String getHEAD() {
         return readContentsAsString(HEAD_FILE);
     }
 
-    private static String getBranch() {
+    public static String getBranch() {
         return readContentsAsString(BRANCH_FILE);
     }
+
+
 
 
     /**
@@ -630,7 +635,8 @@ public class Repository {
         if(!target_gitlet_dir.exists()){
             System.out.println("Remote directory not found.");
         }
-        
+        Repository.getBranch();
+
     }
     /**
      * Save the current status of Repository

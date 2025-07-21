@@ -355,7 +355,10 @@ public class Repository {
             System.exit(0);
         }
         String file_sha1 = target_commit.getSnapshot().get(filename);
-        restoreFilesToWorking(filename, file_sha1);
+        boolean flag= restoreFilesToWorking(filename, file_sha1);
+        if(flag == false) {
+            System.exit(0);
+        }
         if (this.stage.isStagedInAdd(filename)) {
             this.stage.removeFromAddStage(filename);
         }
@@ -365,16 +368,17 @@ public class Repository {
         saveToFile();
     }
 
-    private void restoreFilesToWorking(String filename, String file_sha1) {
+    private boolean restoreFilesToWorking(String filename, String file_sha1) {
         File file_instance = new File(filename);
         if (file_instance.exists() && Utils.getFileSha1(file_instance).equals(file_sha1)) {
             //如果没有变化，就直接结束
-            System.exit(0);
+            return false;
         }
         File store_dir = new File(Repository.BLOB_DIR, file_sha1.substring(0, 2));
         Utils.restrictedDelete(file_instance);
         Utils.copyFile(Utils.join(store_dir, file_sha1.substring(2))
                 , file_instance);
+        return true;
     }
 
     public void checkout_3(String branch_name) {
@@ -436,6 +440,7 @@ public class Repository {
         }
         this.stage.clear();
         this.HEAD = target_commit.getUID();
+
         this.saveToFile();
     }
 

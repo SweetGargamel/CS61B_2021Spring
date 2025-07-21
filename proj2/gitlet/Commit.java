@@ -187,7 +187,7 @@ public class Commit implements Dumpable {
     public static Commit getCommit(String UID) throws Exception {
         if (UID.length() == Utils.UID_LENGTH) {
             return getCommitWithFullSha1(UID);
-        } else if (UID.length() > Utils.UID_LENGTH || UID.length() != 6) {
+        } else if (UID.length() > Utils.UID_LENGTH) {
             throw new FileNotFoundException();
         } else {
             List<String> possible_commits = new ArrayList<>();
@@ -237,6 +237,7 @@ public class Commit implements Dumpable {
     public boolean TrackedAButDiffer(String filename) {
         return !this.snapshot.get(filename).equals(Utils.getFileSha1(filename));
     }
+
 
     public static String find_split_commit(Commit commit1, Commit commit2) {
         Map<String,Integer> comm1_toInit = getPathToInit(commit1);
@@ -298,6 +299,10 @@ public class Commit implements Dumpable {
         return paths;
     }
 
+//    public String getInitCommit(){
+//
+//
+//    }
     public static Map<String, Integer> getPathToInit(Commit commit) {
         Map<String, Integer> paths = new HashMap<>();
         Queue<String> queue = new ArrayDeque<>();

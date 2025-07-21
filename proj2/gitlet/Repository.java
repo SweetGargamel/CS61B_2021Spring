@@ -194,6 +194,8 @@ public class Repository {
     }
 
     public void log() {
+        validateIsInitialized();
+
         String curr_UID = HEAD;
         Commit curr_commit;
         while (curr_UID != "") {
@@ -222,6 +224,8 @@ public class Repository {
     }
 
     public void find(String target_msg) {
+        validateIsInitialized();
+
         boolean found = false;
         for (String commit_UID : Commit.getAllCommits()) {
             Commit curr_commit = null;
@@ -242,6 +246,7 @@ public class Repository {
     }
 
     public void status() {
+        validateIsInitialized();
 
         System.out.println("=== Branches ===");
         for (String branch_name : Branch.getAllBranches()) {
@@ -338,10 +343,13 @@ public class Repository {
     }
 
     public void checkout_1(String filename) {
+        validateIsInitialized();
+
         checkout_2(HEAD, filename);
     }
 
     public void checkout_2(String UID, String filename) {
+        validateIsInitialized();
 
         Commit target_commit = null;
         try {
@@ -382,6 +390,7 @@ public class Repository {
     }
 
     public void checkout_3(String branch_name) {
+        validateIsInitialized();
 
         if (branch_name.equals(this.now_branch)) {
             System.out.println("No need to checkout the current branch.");
@@ -429,7 +438,7 @@ public class Repository {
         for (String now_tracked_file : curr_commit.getSnapshot().keySet()) {
             if (!target_commit.getSnapshot().containsKey(now_tracked_file)) {
                 File now_file = new File(now_tracked_file);
-                Utils.restrictedDelete(now_file);
+                now_file.delete();
             }
         }
         //开始覆盖所有的文件
@@ -452,6 +461,8 @@ public class Repository {
 
 
     public void rm_branch(String branch_name) {
+        validateIsInitialized();
+
         if (branch_name.equals(this.now_branch)) {
             System.out.println("Cannot remove the current branch.");
             System.exit(0);
@@ -467,6 +478,8 @@ public class Repository {
     }
 
     public void reset(String UID) {
+        validateIsInitialized();
+
         Commit target_commit = null;
         try {
             target_commit = Commit.getCommit(UID);
@@ -482,6 +495,8 @@ public class Repository {
     }
 
     public void merge(String another_branch) {
+
+        validateIsInitialized();
         if (!this.stage.getRemoveStage().isEmpty() && !this.stage.getAddStage().isEmpty()) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
@@ -635,11 +650,15 @@ public class Repository {
     }
 
     public void add_remote(String remote_name, String name_of_the_directroy) {
+        validateIsInitialized();
+
         Remote new_remote = new Remote(remote_name, name_of_the_directroy);
 
     }
 
     public void rm_remote(String remote_name) {
+        validateIsInitialized();
+
         Remote target_remote = null;
         try {
             target_remote = Remote.getRemote(remote_name);
@@ -650,6 +669,7 @@ public class Repository {
     }
 
     public void push(String remote_name, String branch_name) {
+        validateIsInitialized();
         changeWorkingDirectory(System.getProperty("user.dir"));
         Remote target_remote = null;
         try {
@@ -667,8 +687,8 @@ public class Repository {
         }
         Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
         File currgitletDir = BLOB_DIR;
-        //切换到远程分支
 
+        //切换到远程分支
         changeWorkingDirectory(target_remote.remote_path);
 
         if (!GITLET_DIR.exists()) {
@@ -691,6 +711,8 @@ public class Repository {
             Remote.pushFileFromLoaclToRemote(
                     local_curr_commit.getUID(),remote_commit.getUID(),
                     currgitletDir,remotegitletDir);
+        }else{
+//            Remote.pushFileFromLoaclToRemote(local_curr_commit.getUID(),local_curr_commit.getStartUID(),);
         }
 
 

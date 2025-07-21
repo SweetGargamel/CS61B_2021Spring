@@ -661,8 +661,9 @@ public class Repository {
             throw new RuntimeException(e);
         }
         Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
+        File currgitletDir = BLOB_DIR;
         //切换到远程分支
-        File currBlobDir = BLOB_DIR;
+
         changeWorkingDirectory(target_remote.remote_path);
 
         if (!GITLET_DIR.exists()) {
@@ -673,8 +674,19 @@ public class Repository {
             System.out.println("Please pull down remote changes before pushing.");
             System.exit(0);
         }
-        File remoteBlobDir = BLOB_DIR;
-
+        File remotegitletDir = CWD;
+        Branch remote_branch = Branch.get_Branch(branch_name);
+        Commit remote_commit = null;
+        try{
+            remote_commit =Commit.getCommit(getHEAD());
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+        if(remote_branch != null){
+            Remote.pushFileFromLoaclToRemote(
+                    local_curr_commit.getUID(),remote_commit.getUID(),
+                    currgitletDir,remotegitletDir);
+        }
 
 
 

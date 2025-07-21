@@ -2,8 +2,6 @@ package gitlet;
 
 // TODO: any imports you need here
 
-import afu.org.checkerframework.checker.igj.qual.I;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -266,7 +264,7 @@ public class Commit implements Dumpable {
     /**
      *
      * @param start_commit
-     * @param Target_UID
+     * @param
      * @return
      */
     public static Map<String, Integer> getPathToTargetCommit(Commit start_commit,Commit end_commit){

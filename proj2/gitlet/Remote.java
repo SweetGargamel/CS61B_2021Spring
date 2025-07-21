@@ -1,7 +1,5 @@
 package gitlet;
 
-import jh61b.junit.In;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +47,10 @@ public class Remote implements Dumpable{
             return null;
         }
     }
-    public static void pushFromLoaclToRemote
-            (String start_sha1,String end_sha1,String local_commit_dir,String remote_commit_dir){
+    public static void pushFileFromLoaclToRemote
+            (String start_sha1,String end_sha1,
+             File local_gitlet_dir,File remote_gitlet_dir
+            ){
             try {
                 Commit end = Commit.getCommit(end_sha1);
                 Commit start = Commit.getCommit(start_sha1);
@@ -61,8 +61,14 @@ public class Remote implements Dumpable{
                         continue;
                     }
                     Commit curr_commit = Commit.getCommit(commit);
+                    Utils.copyFile(
+                            Utils.join(local_gitlet_dir,"COMMIT",curr_commit.getUID()),
+                            Utils.join(remote_gitlet_dir,"COMMIT",curr_commit.getUID()));
                     for(String file_sha1: curr_commit.getSnapshot().keySet()){
-                        Utils.
+                        Utils.copyFile_WithSha1Name(Utils.join(local_gitlet_dir,"BLOB"),
+                                Utils.join(remote_gitlet_dir,"BLOB"),
+                                file_sha1,file_sha1);
+
                     }
                 }
             } catch (Exception e) {

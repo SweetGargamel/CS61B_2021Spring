@@ -1,7 +1,6 @@
 package gitlet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 import static gitlet.Utils.*;
@@ -44,7 +43,7 @@ public class Repository {
     public static final File COMMIT_DIR = join(GITLET_DIR, "COMMIT");
     public static final File BLOB_DIR = join(GITLET_DIR, "BLOB");
     public static final File REFS_DIR = join(GITLET_DIR, "REFS");
-
+    public static final File REMOTE_DIR = join(GITLET_DIR, "REMOTE");
 
     /**
      * The HEAD varivable stores the HEAD sha-1 ID
@@ -64,7 +63,6 @@ public class Repository {
     public Repository() {
         if (GITLET_DIR.exists()) {
             isInitialized = true;
-
             HEAD = getHEAD();
             stage = readObject(STAGE_FILE, Stage.class);
             now_branch = getBranch();
@@ -143,7 +141,7 @@ public class Repository {
         Commit HEAD_commit = null;
         try {
             HEAD_commit = Commit.getCommit(HEAD);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -153,13 +151,14 @@ public class Repository {
         }
         //Corner Case1: no such file
 
-        if (!rmFile.exists()) {
+        if (!rmFile.exists() && !HEAD_commit.hasFileTracked(filename)) {
             System.out.println("No reason to remove the file.");
             System.exit(0);
         }
         //Case 1: when is Staged,the remove it from addstage
         if (this.stage.isStagedInAdd(filename)) {
             this.stage.removeFromAddStage(filename);
+            this.stage.putRemoveStage(filename);
         }
         //Case2 : Tracked
         if (HEAD_commit.hasFileTracked(filename)) {
@@ -175,7 +174,7 @@ public class Repository {
         while (curr_UID != "") {
             try {
                 curr_commit = Commit.getCommit(curr_UID);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             curr_commit.printCommit();
@@ -190,7 +189,7 @@ public class Repository {
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(commit_UID);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             curr_commit.printCommit();
@@ -203,7 +202,7 @@ public class Repository {
             Commit curr_commit = null;
             try {
                 curr_commit = Commit.getCommit(commit_UID);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             if (target_msg.equals(curr_commit.getMessage())) {
@@ -245,7 +244,7 @@ public class Repository {
         Commit curr_commit = null;
         try {
             curr_commit = Commit.getCommit(HEAD);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -294,7 +293,7 @@ public class Repository {
     private List<String> getUntrackedFiles(String curr_commit) {
         try {
             return getUntrackedFiles(Commit.getCommit(curr_commit));
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -322,7 +321,7 @@ public class Repository {
         Commit target_commit = null;
         try {
             target_commit = Commit.getCommit(UID);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             System.out.println("No commit with that id exists.");
             System.exit(0);
         }
@@ -367,7 +366,7 @@ public class Repository {
         Commit target_commit;
         try {
             target_commit = Commit.getCommit(target_branch.ref_UID);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -394,7 +393,7 @@ public class Repository {
         Commit curr_commit = null;
         try {
             curr_commit = Commit.getCommit(HEAD);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         //删除所有当前追踪但是目标里面没有追踪的
@@ -441,7 +440,7 @@ public class Repository {
         Commit target_commit = null;
         try {
             target_commit = Commit.getCommit(UID);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             System.out.println("No commit with that id exists.");
             System.exit(0);
         }
@@ -473,7 +472,7 @@ public class Repository {
             curr_commit = Commit.getCommit(HEAD);
             another_baranch_instance = Branch.get_Branch(another_branch);
             another_commit = Commit.getCommit(another_baranch_instance.ref_UID);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -492,7 +491,7 @@ public class Repository {
         Commit split_commit_instance = null;
         try {
             split_commit_instance = Commit.getCommit(split_commit);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -605,7 +604,34 @@ public class Repository {
         saveToFile();
 
     }
+    public void add_remote(String remote_name,String name_of_the_directroy){
+        Remote new_remote = new Remote(remote_name,name_of_the_directroy);
 
+    }
+
+    public void rm_remote(String remote_name){
+        Remote target_remote = null;
+        try {
+            target_remote = Remote.getRemote(remote_name);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        target_remote.remove_self();
+    }
+
+    public void push(String remote_name,String branch_name){
+        Remote target_remote = null;
+        try {
+            target_remote = Remote.getRemote(remote_name);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        File target_gitlet_dir = new File(target_remote.remote_path);
+        if(!target_gitlet_dir.exists()){
+            System.out.println("Remote directory not found.");
+        }
+        
+    }
     /**
      * Save the current status of Repository
      */

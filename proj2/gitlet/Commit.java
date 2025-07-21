@@ -184,7 +184,7 @@ public class Commit implements Dumpable {
      * @param UID
      * @return
      */
-    public static Commit getCommit(String UID) throws FileNotFoundException {
+    public static Commit getCommit(String UID) throws Exception {
         if (UID.length() == Utils.UID_LENGTH) {
             return getCommitWithFullSha1(UID);
         } else if (UID.length() > Utils.UID_LENGTH || UID.length() != 6) {
@@ -204,7 +204,7 @@ public class Commit implements Dumpable {
         }
     }
 
-    private static Commit getCommitWithFullSha1(String UID) throws FileNotFoundException {
+    private static Commit getCommitWithFullSha1(String UID) throws Exception {
         if (UID.length() == Utils.UID_LENGTH) {
             return Utils.readObject(Utils.join(Repository.COMMIT_DIR, UID), Commit.class);
         } else {

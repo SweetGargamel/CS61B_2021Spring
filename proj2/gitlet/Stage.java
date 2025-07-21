@@ -37,7 +37,7 @@ public class Stage implements Dumpable {
         Commit HEAD_Commit = null;
         try {
             HEAD_Commit = Commit.getCommit(HEAD);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         //To validate if the file exists in the working directory

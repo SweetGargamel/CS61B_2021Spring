@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2fef34d5-a7ce-496c-8504-f6eba905b98d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/merge_err.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/merge_rm_conflicts.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Stage.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Stage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Stage.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Stage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +104,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1753108175603</updated>
-      <workItem from="1753108178412" duration="13668000" />
+      <workItem from="1753108178412" duration="18033000" />
     </task>
     <servers />
   </component>

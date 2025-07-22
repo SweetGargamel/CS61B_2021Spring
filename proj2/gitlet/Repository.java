@@ -497,7 +497,8 @@ public class Repository {
     public void merge(String another_branch) {
 
         validateIsInitialized();
-        if (!this.stage.getRemoveStage().isEmpty() && !this.stage.getAddStage().isEmpty()) {
+
+        if (!this.stage.getRemoveStage().isEmpty() || !this.stage.getAddStage().isEmpty()) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
         }
@@ -596,10 +597,20 @@ public class Repository {
 
 
             //case8 合并冲突
+
+            String curr_file_contents ="";
+            if(!curr_file_sha1.equals("")){
+                curr_file_contents = Utils.readContentOfBlobs(curr_file_sha1);
+            }
+            String another_file_contents ="";
+            if(!another_file_sha1.equals("")){
+                another_file_contents = Utils.readContentOfBlobs(another_file_sha1);
+            }
+
             else {
                 String new_content = "<<<<<<< HEAD\n"
-                        + Utils.readContentOfBlobs(curr_file_sha1)
-                        + "=======\n" + Utils.readContentOfBlobs(another_file_sha1)
+                        + curr_file_contents
+                        + "=======\n" + another_file_contents
                         + ">>>>>>>";
                 all_related_files.put(filename, new_content);
             }

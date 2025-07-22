@@ -51,8 +51,10 @@ public class Stage implements Dumpable {
         if (isStagedInRemove(added_filename)) {
             removeFromRemoveStage(added_filename);
             this.dump();
+            if(!added_fileInstance.exists()){
+                return;
 
-            return;
+            }
         }
         //calculate the sha1 of the file in working directory
         String added_file_sha1 = Utils.getFileSha1(added_fileInstance);

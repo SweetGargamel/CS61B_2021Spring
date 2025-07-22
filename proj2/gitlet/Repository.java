@@ -60,9 +60,12 @@ public class Repository {
     private Stage stage;
     private String now_branch;
 
-    public static void changeWorkingDirectory(String cwdPath) {
-        CWD = new File(cwdPath);
-        GITLET_DIR = join(CWD, ".gitlet");
+    public static void changeWorkingDirectory(String gitlet_dir) {
+        changeWorkingDirectory(new File(gitlet_dir));
+    }
+
+    public static void changeWorkingDirectory(File gitlet_dir) {
+        GITLET_DIR = gitlet_dir;
         /**
          * The HEAD Path and Stage Path
          */
@@ -125,6 +128,7 @@ public class Repository {
             COMMIT_DIR.mkdirs();
             BLOB_DIR.mkdirs();
             REFS_DIR.mkdirs();
+            REMOTE_DIR.mkdirs();
 
             Commit init_commit = new Commit();//Create the init commit .
             HEAD = init_commit.getUID();
@@ -686,7 +690,7 @@ public class Repository {
 
     public void push(String remote_name, String remote_branch_name) {
         validateIsInitialized();
-        changeWorkingDirectory(System.getProperty("user.dir"));
+        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
         //拿到当前的分支名和当前分支
         String local_branch_name = this.now_branch;
         File curr_gitlet_dir = CWD;
@@ -735,13 +739,15 @@ public class Repository {
             remote_branch.dump();
         }
         remote_repo.saveToFile();
-        changeWorkingDirectory(System.getProperty("user.dir"));
+        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
+
         this.saveToFile();
     }
 
     public void fetch(String remote_name, String remote_branch_name) {
         validateIsInitialized();
-        changeWorkingDirectory(System.getProperty("user.dir"));
+        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
+
         //第一步 判断远程仓库是否存在
         Remote target_remote = null;
         try {
@@ -763,8 +769,8 @@ public class Repository {
         Branch remote_branch = Branch.get_Branch(remote_branch_name);
         if (remote_branch == null) {
             System.out.println("That remote does not have that branch.");
+            System.exit(0);
         }
-
         //第三部拷贝所有文件
 
         Commit remote_commit = null;
@@ -777,9 +783,12 @@ public class Repository {
         Map<String, Integer> remoteBanchToInit = Commit.getPathToInit(remote_commit);
         Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, remote_gitlet_dir );
         //返回到当前目录暂存这样一个分支
-        changeWorkingDirectory(System.getProperty("user.dir"));
+        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
+
         String new_branch_name=remote_name+"/"+remote_branch_name;
         Branch new_local_branch = new Branch(new_branch_name, remote_branch.ref_UID);
+        this.HEAD = new_local_branch.ref_UID;
+        this.now_branch = new_branch_name;
         new_local_branch.dump();
         saveToFile();
 

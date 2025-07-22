@@ -9,10 +9,12 @@ public class Remote implements Dumpable {
     public String remote_path;
 
     public Remote(String remote_name, String remote_path) {
-        for (String r_name : getAllRemotes()) {
-            if (r_name.equals(remote_name)) {
-                System.out.println("A remote with that name already exists.");
-                System.exit(0);
+        if (getAllRemotes() != null) {
+            for (String r_name : getAllRemotes()) {
+                if (r_name.equals(remote_name)) {
+                    System.out.println("A remote with that name already exists.");
+                    System.exit(0);
+                }
             }
         }
         this.remote_name = remote_name;
@@ -60,7 +62,7 @@ public class Remote implements Dumpable {
             }
             copySingleCommits(from_gitlet_dir, to_gitlet_dir, commit);
             for (String file_sha1 : curr_commit.getSnapshot().keySet()) {
-                copyBlobFiles(from_gitlet_dir, to_gitlet_dir, file_sha1);
+                copyBlobFiles(from_gitlet_dir, to_gitlet_dir,curr_commit.getSnapshot().get(file_sha1) );
             }
         }
     }

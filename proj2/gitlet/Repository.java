@@ -619,8 +619,6 @@ public class Repository {
         for (Map.Entry<String, String> entry : all_related_files.entrySet()) {
             String filename = entry.getKey();
             String content = entry.getValue();
-            //confilt
-            System.out.println(filename + ": " + content);
             if (content.startsWith("<<<<<")) {
                 isConfilt = true;
                 Utils.writeContents(Utils.join(CWD, filename), content);

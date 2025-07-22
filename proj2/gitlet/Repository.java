@@ -642,7 +642,6 @@ public class Repository {
         this.HEAD = merge_commit_instance.getUID();
         Branch curr_branch = Branch.get_Branch(this.now_branch);
         curr_branch.updateUID(this.HEAD);
-        System.out.println(msg);
         if (isConfilt) {
             System.out.println("Encountered a merge conflict.");
         }
@@ -700,8 +699,9 @@ public class Repository {
         Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
             //切换到远程
         changeWorkingDirectory(target_remote.remote_path);
+        Repository remote_repo = new Repository();
             //如果不存在就退出
-        if(! LoaclpathToInit.keySet().contains(getHEAD())){
+        if(! LoaclpathToInit.keySet().contains(remote_repo.HEAD)){
             System.out.println("Please pull down remote changes before pushing.");
             System.exit(0);
         }

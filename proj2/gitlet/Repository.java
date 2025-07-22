@@ -78,6 +78,8 @@ public class Repository {
         REMOTE_DIR = join(GITLET_DIR, "REMOTE");
     }
 
+    public File gitlet_dir;
+
     public Repository() {
         if (GITLET_DIR.exists()) {
             isInitialized = true;
@@ -90,6 +92,7 @@ public class Repository {
             stage = null;
             now_branch = "";
         }
+        this.gitlet_dir = GITLET_DIR;
     }
 
     public static String getHEAD(File headFile) {
@@ -363,8 +366,8 @@ public class Repository {
             System.exit(0);
         }
         String file_sha1 = target_commit.getSnapshot().get(filename);
-        boolean flag= restoreFilesToWorking(filename, file_sha1);
-        if(flag == false) {
+        boolean flag = restoreFilesToWorking(filename, file_sha1);
+        if (flag == false) {
             System.exit(0);
         }
         if (this.stage.isStagedInAdd(filename)) {
@@ -599,14 +602,13 @@ public class Repository {
             //case8 合并冲突
 
 
-
             else {
-                String curr_file_contents ="";
-                if(!curr_file_sha1.equals("")){
+                String curr_file_contents = "";
+                if (!curr_file_sha1.equals("")) {
                     curr_file_contents = Utils.readContentOfBlobs(curr_file_sha1);
                 }
-                String another_file_contents ="";
-                if(!another_file_sha1.equals("")){
+                String another_file_contents = "";
+                if (!another_file_sha1.equals("")) {
                     another_file_contents = Utils.readContentOfBlobs(another_file_sha1);
                 }
                 String new_content = "<<<<<<< HEAD\n"
@@ -639,7 +641,7 @@ public class Repository {
             } else if (content.equals("")) {
                 this.stage.putRemoveStage(filename);
                 File file = new File(filename);
-                if(file.exists()) {
+                if (file.exists()) {
                     file.delete();
                 }
             } else if (content.equals("Nothing")) {
@@ -649,7 +651,7 @@ public class Repository {
                 this.stage.putAddStage(filename, HEAD);
             }
         }
-        String msg = "Merged " + another_branch + " into " + this.now_branch+".";
+        String msg = "Merged " + another_branch + " into " + this.now_branch + ".";
         Commit merge_commit_instance = new Commit(msg, this.HEAD, another_commit.getUID(), this.stage);
         this.stage.clear();
         this.HEAD = merge_commit_instance.getUID();
@@ -682,13 +684,20 @@ public class Repository {
         target_remote.remove_self();
     }
 
-    public void push(String remote_name, String branch_name) {
+    public void push(String remote_name, String remote_branch_name) {
         validateIsInitialized();
         changeWorkingDirectory(System.getProperty("user.dir"));
-        //拿到当前的工作目录
-        File currgitletDir = BLOB_DIR;
-        //拿到当前的分支名
-        String curr_branch_name = this.now_branch;
+        //拿到当前的分支名和当前分支
+        String local_branch_name = this.now_branch;
+        File curr_gitlet_dir = CWD;
+        Commit local_curr_commit = null;
+        try {
+            local_curr_commit = Commit.getCommit(this.HEAD);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        //拿到当前的祖先
+        Map<String,Integer> LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
 
         //第一步 判断远程仓库是否存在
         Remote target_remote = null;
@@ -698,45 +707,89 @@ public class Repository {
             System.out.println("Remote directory not found.");
             System.exit(0);
         }
-        if (!new File(target_remote.getRemote_path()).exists()) {
+        if (!new File(target_remote.getRemote_path()).exists() || !target_remote.getRemote_path().endsWith(".gitlet")) {
             System.out.println("Remote directory not found.");
             System.exit(0);
         }
-        //第二步，检查远程头是否为历史
-        Commit local_curr_commit = null;
+
+        //切换到远程
+        changeWorkingDirectory(target_remote.remote_path);
+        Repository remote_repo = new Repository();
+        Branch remote_branch = Branch.get_Branch(remote_branch_name);
+        File remote_gitlet_dir = new File(target_remote.remote_path);//拿到远程的
+
+        if (remote_branch != null) {
+            //第二步，检查远程头是否为历史
+            if (!LoaclpathToInit.keySet().contains(remote_branch.ref_UID)) {
+                System.out.println("Please pull down remote changes before pushing.");
+                //如果不存在就退出
+                System.exit(0);
+            } else {
+                Remote.fetchFileBetweenRepos(LoaclpathToInit, curr_gitlet_dir, remote_gitlet_dir);
+                remote_branch.updateUID(this.HEAD);
+                remote_branch.dump();
+            }
+        } else {
+            Remote.fetchFileBetweenRepos(LoaclpathToInit, curr_gitlet_dir, remote_gitlet_dir);
+            remote_branch = new Branch(remote_branch_name, this.HEAD);
+            remote_branch.dump();
+        }
+        remote_repo.saveToFile();
+        changeWorkingDirectory(System.getProperty("user.dir"));
+        this.saveToFile();
+    }
+
+    public void fetch(String remote_name, String remote_branch_name) {
+        validateIsInitialized();
+        changeWorkingDirectory(System.getProperty("user.dir"));
+        //第一步 判断远程仓库是否存在
+        Remote target_remote = null;
         try {
-            local_curr_commit = Commit.getCommit(this.HEAD);
+            target_remote = Remote.getRemote(remote_name);
+        } catch (Exception e) {
+            System.out.println("Remote directory not found.");
+            System.exit(0);
+        }
+        if (!new File(target_remote.getRemote_path()).exists() || !target_remote.getRemote_path().endsWith(".gitlet")) {
+            System.out.println("Remote directory not found.");
+            System.exit(0);
+        }
+        //第二步判断远程的分支是否存在
+
+        File local_gitlet_dir = CWD;
+        File remote_gitlet_dir = new File(target_remote.remote_path);
+
+        changeWorkingDirectory(target_remote.remote_path);
+        Branch remote_branch = Branch.get_Branch(remote_branch_name);
+        if (remote_branch == null) {
+            System.out.println("That remote does not have that branch.");
+        }
+
+        //第三部拷贝所有文件
+
+        Commit remote_commit = null;
+        try {
+            remote_commit = Commit.getCommit(remote_branch.ref_UID);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
-            //切换到远程
-        changeWorkingDirectory(target_remote.remote_path);
-        Repository remote_repo = new Repository();
-            //如果不存在就退出
-        if(! LoaclpathToInit.keySet().contains(remote_repo.HEAD)){
-            System.out.println("Please pull down remote changes before pushing.");
-            System.exit(0);
-        }
-        //第三步 判断分支是否存在
-        File remotegitletDir = CWD;//拿到远程的
-        Branch remote_branch = Branch.get_Branch(branch_name);
-        Commit remote_commit = null;
-        try{
-            remote_commit =Commit.getCommit(getHEAD());
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
-        if(remote_branch != null){
-            Remote.pushFileFromLoaclToRemote(
-                    local_curr_commit.getUID(),remote_commit.getUID(),
-                    currgitletDir,remotegitletDir);
-        }else{
-//            Remote.pushFileFromLoaclToRemote(local_curr_commit.getUID(),local_curr_commit.getStartUID(),);
-        }
 
+        Map<String, Integer> remoteBanchToInit = Commit.getPathToInit(remote_commit);
+        Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, remote_gitlet_dir );
+        //返回到当前目录暂存这样一个分支
+        changeWorkingDirectory(System.getProperty("user.dir"));
+        String new_branch_name=remote_name+"/"+remote_branch_name;
+        Branch new_local_branch = new Branch(new_branch_name, remote_branch.ref_UID);
+        new_local_branch.dump();
+        saveToFile();
 
+    }
 
+    public void pull(String remote_name, String remote_branch_name) {
+        validateIsInitialized();
+        fetch(remote_name, remote_branch_name);
+        merge(remote_name+"/"+remote_branch_name);
+        saveToFile();
 
     }
 

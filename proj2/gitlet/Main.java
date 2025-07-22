@@ -93,6 +93,15 @@ public class Main {
                 checkArgs(args, 3);
                 repo.rm_remote(args[1]);
                 break;
+            case "push":
+                checkArgs(args, 3);
+                repo.push(args[1], args[2]);
+
+                break;
+
+            case "pull":
+                checkArgs(args, 3);
+
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);
@@ -115,7 +124,7 @@ public class Main {
             System.out.println("Please enter a commit message.");
             System.exit(0);
         } else if (args.length == 2) {
-            if(args[1].equals("")) {
+            if (args[1].equals("")) {
                 System.out.println("Please enter a commit message.");
                 System.exit(0);
             }

@@ -236,12 +236,7 @@ class Utils {
             throw new RuntimeException(e);
         }
     }
-    static void copyFile_WithSha1Name(File sourceBlobDir,File destinationBlobDir, String sourceSha1,String destinationSha1){
-        File sourceFileDir = join(sourceBlobDir,sourceSha1.substring(0, 2));
-        File destinationFileDir = join(destinationBlobDir,destinationSha1.substring(0, 2));
-        copyFile(join(sourceFileDir,sourceSha1.substring(2)),
-                join(destinationFileDir,destinationSha1.substring(2)));
-    }
+
 
 
     /* SERIALIZATION UTILITIES */

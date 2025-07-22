@@ -4,18 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2fef34d5-a7ce-496c-8504-f6eba905b98d" name="Changes" comment="" />
+    <list default="true" id="b1cb0ba0-1217-46ed-9eef-3979c3a69ce9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Read.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Read.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Remote.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Remote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/prelude1.inc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/setup1.inc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/setup2.inc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/test33-merge-no-conflicts.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/src/wug2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/src/wug3.txt" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -31,14 +37,13 @@
   "customColor": "",
   "associatedIndex": 4
 }]]></component>
-  <component name="ProjectId" id="30Bk60HeVtEUgEsw8nD9o3qHvnk" />
+  <component name="ProjectId" id="30E9vF5FjGgH4NK0vcmybaRBCNh" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Read.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
@@ -47,39 +52,10 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.fileTypes",
+    "settings.editor.selected.configurable": "MavenSettings",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\CodePlace\CS61B_Skeleton21\proj2\testing\src" />
-      <recent name="E:\CodePlace\CS61B_Skeleton21\proj2\gitlet" />
-    </key>
-  </component>
-  <component name="RunManager">
-    <configuration name="Read" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="gitlet.Read" />
-      <module name="proj2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="gitlet.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.Read" />
-      </list>
-    </recent_temporary>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -91,12 +67,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="2fef34d5-a7ce-496c-8504-f6eba905b98d" name="Changes" comment="" />
-      <created>1753108175603</created>
+      <changelist id="b1cb0ba0-1217-46ed-9eef-3979c3a69ce9" name="Changes" comment="" />
+      <created>1753182095017</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1753108175603</updated>
-      <workItem from="1753108178412" duration="19668000" />
+      <updated>1753182095017</updated>
+      <workItem from="1753182096462" duration="308000" />
     </task>
     <servers />
   </component>

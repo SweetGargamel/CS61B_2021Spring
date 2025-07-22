@@ -612,7 +612,7 @@ public class Repository {
                 String new_content = "<<<<<<< HEAD\n"
                         + curr_file_contents
                         + "=======\n" + another_file_contents
-                        + ">>>>>>>";
+                        + ">>>>>>>\n";
                 all_related_files.put(filename, new_content);
             }
         }

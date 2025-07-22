@@ -3,29 +3,36 @@
 # ==============================================================================
 # This is an auto-generated script from 'ec-test102-remote-fetch-push.in'.
 #
-# UPDATED: To run 'java' from subdirectories, this script uses the '-cp ..'
-# flag. This tells Java to look for the .class files in the parent directory
-# (where the script is run from), while allowing commands to operate within
-# the D1 and D2 repository directories.
+# UPDATED: Now automatically extracts the required commit hash from the log
+# output using grep/awk, making the script fully automated.
 #
 # NOTE: This script will automatically delete the D1 and D2 directories
 # and all their contents upon completion.
 # ==============================================================================
 
 # To run this script step-by-step, press Enter at each prompt.
+trap 'read -p "EXECUTE: [$BASH_COMMAND] - Press Enter..."' DEBUG
 
 # Set up the first repository (D1) to act as the remote
 mkdir -p D1
 cd D1
 
-# Run gitlet commands from within D1 using a classpath pointing to the parent dir
 java -cp .. gitlet.Main init
 echo "This is a wug." > f.txt
 echo "This is not a wug." > g.txt
 java -cp .. gitlet.Main add g.txt
 java -cp .. gitlet.Main add f.txt
 java -cp .. gitlet.Main commit "Two files"
-java -cp .. gitlet.Main log
+
+# --- Automatic Hash Extraction ---
+# 1. Capture the entire log output into a variable.
+LOG_OUTPUT=$(java -cp .. gitlet.Main log)
+
+# 2. Find the "Two files" commit message, get the preceding lines (-B 2),
+#    isolate the 'commit <hash>' line, and extract the hash (the 2nd field).
+R1_TWO_FILES_HASH=$(echo "$LOG_OUTPUT" | grep -B 2 "Two files" | grep "commit " | awk '{print $2}')
+# ---------------------------------
+
 cd ..
 
 # Set up the second repository (D2) to act as the local
@@ -37,19 +44,16 @@ echo "Another wug." > k.txt
 java -cp .. gitlet.Main add k.txt
 java -cp .. gitlet.Main commit "Add k in repo 2"
 java -cp .. gitlet.Main log
-# Add D1 as a remote, fetch from it, and check out its master branch
-trap 'read -p "EXECUTE: [$BASH_COMMAND] - Press Enter..."' DEBUG
 
+# Add D1 as a remote, fetch from it, and check out its master branch
 java -cp .. gitlet.Main add-remote R1 ../D1/.gitlet
 java -cp .. gitlet.Main fetch R1 master
 java -cp .. gitlet.Main checkout R1/master
 java -cp .. gitlet.Main log
 java -cp .. gitlet.Main checkout master
 
-# IMPORTANT: The 'reset' command requires the commit hash of the "Two files"
-# commit from the R1 repository. You must copy the hash from the log output
-# above and replace the placeholder text below.
-java -cp .. gitlet.Main reset <hash_of_R1_"Two files"_commit>
+# Use the automatically extracted hash in the reset command.
+java -cp .. gitlet.Main reset "$R1_TWO_FILES_HASH"
 
 # Create a new commit in D2 and push it to the R1 remote
 # NOTE: The content for wug3.txt was not provided, so a placeholder is used.

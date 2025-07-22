@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b1cb0ba0-1217-46ed-9eef-3979c3a69ce9" name="Changes" comment="">
+    <list default="true" id="e9758f76-3376-49c8-9413-8a5160064e7a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Read.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Read.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Remote.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Remote.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Utils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/prelude1.inc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/setup1.inc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/setup2.inc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/merge-mo-conflicts/test33-merge-no-conflicts.in" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/src/wug2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/src/wug3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Remote.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Remote.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_push.sh" beforeDir="false" afterPath="$PROJECT_DIR$/test_push.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +29,7 @@
   "customColor": "",
   "associatedIndex": 4
 }]]></component>
-  <component name="ProjectId" id="30E9vF5FjGgH4NK0vcmybaRBCNh" />
+  <component name="ProjectId" id="30EOi4UbvWDkxy1L39xc6WN0Lb8" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -45,7 +37,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "fd7a73a3",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -67,12 +59,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="b1cb0ba0-1217-46ed-9eef-3979c3a69ce9" name="Changes" comment="" />
-      <created>1753182095017</created>
+      <changelist id="e9758f76-3376-49c8-9413-8a5160064e7a" name="Changes" comment="" />
+      <created>1753189391480</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1753182095017</updated>
-      <workItem from="1753182096462" duration="308000" />
+      <updated>1753189391480</updated>
+      <workItem from="1753189393589" duration="352000" />
     </task>
     <servers />
   </component>

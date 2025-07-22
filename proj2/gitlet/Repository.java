@@ -202,7 +202,6 @@ public class Repository {
 
     public void log() {
         validateIsInitialized();
-
         String curr_UID = HEAD;
         Commit curr_commit;
         while (curr_UID != "") {

@@ -598,16 +598,17 @@ public class Repository {
 
             //case8 合并冲突
 
-            String curr_file_contents ="";
-            if(!curr_file_sha1.equals("")){
-                curr_file_contents = Utils.readContentOfBlobs(curr_file_sha1);
-            }
-            String another_file_contents ="";
-            if(!another_file_sha1.equals("")){
-                another_file_contents = Utils.readContentOfBlobs(another_file_sha1);
-            }
+
 
             else {
+                String curr_file_contents ="";
+                if(!curr_file_sha1.equals("")){
+                    curr_file_contents = Utils.readContentOfBlobs(curr_file_sha1);
+                }
+                String another_file_contents ="";
+                if(!another_file_sha1.equals("")){
+                    another_file_contents = Utils.readContentOfBlobs(another_file_sha1);
+                }
                 String new_content = "<<<<<<< HEAD\n"
                         + curr_file_contents
                         + "=======\n" + another_file_contents
@@ -630,6 +631,7 @@ public class Repository {
         for (Map.Entry<String, String> entry : all_related_files.entrySet()) {
             String filename = entry.getKey();
             String content = entry.getValue();
+
             if (content.startsWith("<<<<<")) {
                 isConfilt = true;
                 Utils.writeContents(Utils.join(CWD, filename), content);

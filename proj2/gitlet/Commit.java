@@ -72,11 +72,11 @@ public class Commit implements Dumpable {
         this.UID = Utils.sha1(this.message, this.parents.toString(), this.snapshot.toString(), this.date.toString());
         this.dump();
     }
+
     /**
-     *
      * for merge commit
      */
-    public Commit(String message,String parent1,String parent2,Stage stage) {
+    public Commit(String message, String parent1, String parent2, Stage stage) {
         this.message = message;
         this.parents = new ArrayList<>();
         this.parents.add(parent1);
@@ -107,8 +107,6 @@ public class Commit implements Dumpable {
         this.UID = Utils.sha1(this.message, this.parents.toString(), this.snapshot.toString(), this.date.toString());
         this.dump();
     }
-
-
 
 
     public String getMessage() {
@@ -241,13 +239,13 @@ public class Commit implements Dumpable {
 
 
     public static String find_split_commit(Commit commit1, Commit commit2) {
-        Map<String,Integer> comm1_toInit = getPathToInit(commit1);
+        Map<String, Integer> comm1_toInit = getPathToInit(commit1);
         Queue<String> queue = new ArrayDeque<>();
         queue.add(commit2.getUID());
         String curr_UID = commit2.getUID();
         while (!queue.isEmpty()) {
             curr_UID = queue.poll();
-            if(comm1_toInit.containsKey(curr_UID)) {
+            if (comm1_toInit.containsKey(curr_UID)) {
                 return curr_UID;
             }
             Commit curr_commit = null;
@@ -256,7 +254,7 @@ public class Commit implements Dumpable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            for(String com : curr_commit.getParents()){
+            for (String com : curr_commit.getParents()) {
                 queue.add(com);
             }
         }
@@ -264,12 +262,11 @@ public class Commit implements Dumpable {
     }
 
     /**
-     *
      * @param start_commit
      * @param
      * @return
      */
-    public static Map<String, Integer> getPathToTargetCommit(Commit start_commit,Commit end_commit){
+    public static Map<String, Integer> getPathToTargetCommit(Commit start_commit, Commit end_commit) {
         Map<String, Integer> paths = new HashMap<>();
         Queue<String> queue = new ArrayDeque<>();
         queue.add(start_commit.getUID());
@@ -284,13 +281,13 @@ public class Commit implements Dumpable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            for(String com : curr_commit.getParents()){
-                if(com.equals( end_commit.getUID())){
+            for (String com : curr_commit.getParents()) {
+                if (com.equals(end_commit.getUID())) {
                     return paths;
                 }
-                if(paths.containsKey(com)){
+                if (paths.containsKey(com)) {
                     continue;
-                }else{
+                } else {
                     paths.put(com, paths.get(curr_UID) + 1);
                 }
                 queue.add(com);
@@ -300,7 +297,7 @@ public class Commit implements Dumpable {
         return paths;
     }
 
-//    public String getInitCommit(){
+    //    public String getInitCommit(){
 //
 //
 //    }
@@ -319,13 +316,13 @@ public class Commit implements Dumpable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            for(String com : curr_commit.getParents()){
-                if(com == ""){
+            for (String com : curr_commit.getParents()) {
+                if (com == "") {
                     return paths;
                 }
-                if(paths.containsKey(com)){
+                if (paths.containsKey(com)) {
                     continue;
-                }else{
+                } else {
                     paths.put(com, paths.get(curr_UID) + 1);
                 }
                 queue.add(com);
@@ -334,14 +331,15 @@ public class Commit implements Dumpable {
         return paths;
 
     }
-    public void printCommit(){
+
+    public void printCommit() {
         System.out.println("===");
         System.out.println("commit " + this.UID);
         if (this.isMergeCommit()) {
             List<String> parent_arr = this.getParents();
             String par1 = parent_arr.get(0);
             String par2 = parent_arr.get(1);
-            System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
+            System.out.println("Merge: " + par1.substring(0, 7) + " " + par2.substring(0, 7));
         }
         System.out.println(this.getFormatedDate());
         System.out.println(this.getMessage());

@@ -599,7 +599,7 @@ public class Repository {
             else {
                 String new_content = "<<<<<<< HEAD\n"
                         + Utils.readContentOfBlobs(curr_file_sha1)
-                        + "=======" + Utils.readContentOfBlobs(another_file_sha1)
+                        + "=======\n" + Utils.readContentOfBlobs(another_file_sha1)
                         + ">>>>>>>";
                 all_related_files.put(filename, new_content);
             }

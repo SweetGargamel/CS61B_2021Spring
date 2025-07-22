@@ -636,7 +636,7 @@ public class Repository {
                 this.stage.putAddStage(filename, HEAD);
             }
         }
-        String msg = "Merged " + another_branch + " into " + this.now_branch;
+        String msg = "Merged " + another_branch + " into " + this.now_branch+".";
         Commit merge_commit_instance = new Commit(msg, this.HEAD, another_commit.getUID(), this.stage);
         this.stage.clear();
         this.HEAD = merge_commit_instance.getUID();

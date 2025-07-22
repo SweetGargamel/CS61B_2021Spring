@@ -90,6 +90,7 @@ public class Commit implements Dumpable {
         }
         this.date = new Date();
         this.UID = Utils.sha1(this.message, this.parents.toString(), this.snapshot.toString(), this.date.toString());
+        this.isMergeCommit = true;
         this.dump();
     }
 
@@ -337,9 +338,9 @@ public class Commit implements Dumpable {
         System.out.println("===");
         System.out.println("commit " + this.UID);
         if (this.isMergeCommit()) {
-            String[] parent_arr = (String[]) this.getParents().toArray();
-            String par1 = parent_arr[0];
-            String par2 = parent_arr[1];
+            List<String> parent_arr = this.getParents();
+            String par1 = parent_arr.get(0);
+            String par2 = parent_arr.get(1);
             System.out.println(par1.substring(0, 7) + " " + par2.substring(0, 7));
         }
         System.out.println(this.getFormatedDate());

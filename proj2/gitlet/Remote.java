@@ -47,6 +47,9 @@ public class Remote implements Dumpable{
             return null;
         }
     }
+    public String getRemote_path(){
+        return this.remote_path;
+    }
     public static void pushFileFromLoaclToRemote
             (String start_sha1,String end_sha1,
              File local_gitlet_dir,File remote_gitlet_dir

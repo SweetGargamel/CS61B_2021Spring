@@ -571,6 +571,7 @@ public class Repository {
 
             else if (curr_file_sha1.equals(split_commit_file_sha1)) {
                 all_related_files.put(filename, another_file_sha1);
+
             }
 
             //case2 current branch动了的但是given branch没动的，保留
@@ -614,19 +615,22 @@ public class Repository {
                 System.exit(0);
             }
         }
-
         boolean isConfilt = false;
         for (Map.Entry<String, String> entry : all_related_files.entrySet()) {
             String filename = entry.getKey();
             String content = entry.getValue();
             //confilt
+            System.out.println(filename + ": " + content);
             if (content.startsWith("<<<<<")) {
                 isConfilt = true;
                 Utils.writeContents(Utils.join(CWD, filename), content);
                 this.stage.putAddStage(filename, HEAD);
             } else if (content.equals("")) {
                 this.stage.putRemoveStage(filename);
-                Utils.restrictedDelete(filename);
+                File file = new File(filename);
+                if(file.exists()) {
+                    file.delete();
+                }
             } else if (content.equals("Nothing")) {
                 continue;
             } else {
@@ -634,7 +638,7 @@ public class Repository {
                 this.stage.putAddStage(filename, HEAD);
             }
         }
-        String msg = "Merged " + another_branch + " into" + this.now_branch;
+        String msg = "Merged " + another_branch + " into " + this.now_branch;
         Commit merge_commit_instance = new Commit(msg, this.HEAD, another_commit.getUID(), this.stage);
         this.stage.clear();
         this.HEAD = merge_commit_instance.getUID();
@@ -671,6 +675,12 @@ public class Repository {
     public void push(String remote_name, String branch_name) {
         validateIsInitialized();
         changeWorkingDirectory(System.getProperty("user.dir"));
+        //拿到当前的工作目录
+        File currgitletDir = BLOB_DIR;
+        //拿到当前的分支名
+        String curr_branch_name = this.now_branch;
+
+        //第一步 判断远程仓库是否存在
         Remote target_remote = null;
         try {
             target_remote = Remote.getRemote(remote_name);
@@ -678,7 +688,11 @@ public class Repository {
             System.out.println("Remote directory not found.");
             System.exit(0);
         }
-
+        if (!new File(target_remote.getRemote_path()).exists()) {
+            System.out.println("Remote directory not found.");
+            System.exit(0);
+        }
+        //第二步，检查远程头是否为历史
         Commit local_curr_commit = null;
         try {
             local_curr_commit = Commit.getCommit(this.HEAD);
@@ -686,20 +700,15 @@ public class Repository {
             throw new RuntimeException(e);
         }
         Map LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
-        File currgitletDir = BLOB_DIR;
-
-        //切换到远程分支
+            //切换到远程
         changeWorkingDirectory(target_remote.remote_path);
-
-        if (!GITLET_DIR.exists()) {
-            System.out.println("Remote directory not found.");
-            System.exit(0);
-        }
+            //如果不存在就退出
         if(! LoaclpathToInit.keySet().contains(getHEAD())){
             System.out.println("Please pull down remote changes before pushing.");
             System.exit(0);
         }
-        File remotegitletDir = CWD;
+        //第三步 判断分支是否存在
+        File remotegitletDir = CWD;//拿到远程的
         Branch remote_branch = Branch.get_Branch(branch_name);
         Commit remote_commit = null;
         try{

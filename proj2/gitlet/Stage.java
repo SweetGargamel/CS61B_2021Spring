@@ -44,27 +44,28 @@ public class Stage implements Dumpable {
         if (!added_fileInstance.exists() && !this.isStagedInRemove(added_filename)
         ) {
             System.out.println("File does not exist.");
-            System.exit(0);
+            return;
         }
         //CASE0:Already in removeStage
 
         if (isStagedInRemove(added_filename)) {
             removeFromRemoveStage(added_filename);
             this.dump();
-            System.exit(0);
+
+            return;
         }
         //calculate the sha1 of the file in working directory
         String added_file_sha1 = Utils.getFileSha1(added_fileInstance);
         //CASE2:if is staged and the added file is not changed
         if (isStagedInAdd(added_filename)
                 && added_file_sha1.equals(this.addStage.get(added_filename))) {
-            System.exit(0);//exit the program
+            return;
         //CASE3:if is  the same as the latest commit
         } else if (added_file_sha1.equals(HEAD_Commit.getTrackedFileUID(added_filename))) {
             if (isStagedInAdd(added_filename)) {
                 removeFromAddStage(added_filename);
             }
-            System.exit(0); //Remove the file from the addStage
+            return;
         } else {
             //CASE4:
             // if is not staged or is changed ,just copy the current file in working directory

@@ -40,7 +40,12 @@ public class Branch {
 
     public static Branch get_Branch(String branch_name) {
         BranchREFS refs = BranchREFS.getBranchREFS();
-        return new Branch(branch_name,refs.branches.get(branch_name),true);
+        if(refs.branches.containsKey(branch_name)){
+            return new Branch(branch_name,refs.branches.get(branch_name),true);
+
+        }else {
+            return null;
+        }
     }
     public static Map<String,String> getAllBranches(){
         BranchREFS branch_refs=BranchREFS.getBranchREFS();

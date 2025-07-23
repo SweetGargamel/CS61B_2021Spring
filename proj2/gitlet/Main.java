@@ -90,7 +90,7 @@ public class Main {
                 repo.add_remote(args[1], args[2]);
                 break;
             case "rm-remote":
-                checkArgs(args, 3);
+                checkArgs(args, 2);
                 repo.rm_remote(args[1]);
                 break;
             case "push":

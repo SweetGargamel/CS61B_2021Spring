@@ -687,7 +687,8 @@ public class Repository {
         try {
             target_remote = Remote.getRemote(remote_name);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("A remote with that name does not exist.");
+            System.exit(0);
         }
         target_remote.remove_self();
     }
@@ -781,7 +782,6 @@ public class Repository {
             System.out.println("That remote does not have that branch.");
             System.exit(0);
         }
-
         //第三部拷贝所有文件
 
         Commit remote_commit = null;

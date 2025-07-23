@@ -539,7 +539,7 @@ public class Repository {
 
         /// 先做一些检查
         String split_commit = Commit.find_split_commit(curr_commit, another_commit);
-        System.out.println(split_commit);
+
         if (split_commit.equals(another_baranch_instance.ref_UID)) {
             System.out.println("Given branch is an ancestor of the current branch.");
             System.exit(0);

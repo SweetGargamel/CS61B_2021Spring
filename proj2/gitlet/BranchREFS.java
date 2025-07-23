@@ -1,13 +1,14 @@
 package gitlet;
 
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class BranchREFS implements Dumpable {
-    public HashMap<String, String> branches;
+    public Map<String, String> branches;
 
     public BranchREFS() {
-        branches = new HashMap<>();
+        branches = new TreeMap<>();
         this.dump();
     }
     @Override

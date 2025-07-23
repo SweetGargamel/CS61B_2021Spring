@@ -758,8 +758,6 @@ public class Repository {
 
         }
         remote_branch.dump();
-        System.out.println(this.HEAD);
-
 
         remote_repo.saveToFile();
         changeWorkingDirectory(System.getProperty("user.dir"));

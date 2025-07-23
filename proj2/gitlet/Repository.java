@@ -62,9 +62,9 @@ public class Repository {
 
     public static void changeWorkingDirectory(String cwdPath) {
         GITLET_DIR = null;
-        if(cwdPath.endsWith(".gitlet")) {
+        if (cwdPath.endsWith(".gitlet")) {
             GITLET_DIR = new File(cwdPath);
-        }else{
+        } else {
             CWD = new File(cwdPath);
             GITLET_DIR = join(CWD, ".gitlet");
         }
@@ -258,7 +258,10 @@ public class Repository {
         validateIsInitialized();
 
         System.out.println("=== Branches ===");
-        for (String branch_name : Branch.getAllBranches().keySet()) {
+        // 将 keySet 转换为 String 数组，再排序
+        String[] branchNames = Branch.getAllBranches().keySet().toArray(new String[0]);
+        Arrays.sort(branchNames); // String 本身按字典序排序，无需额外 Comparator
+        for (String branch_name : branchNames) {
             if (branch_name.equals(this.now_branch)) {
                 System.out.println("*" + branch_name);
             } else {
@@ -386,7 +389,7 @@ public class Repository {
     }
 
     private boolean restoreFilesToWorking(String filename, String file_sha1) {
-        File file_instance = join(CWD,filename);
+        File file_instance = join(CWD, filename);
         if (file_instance.exists() && Utils.getFileSha1(filename).equals(file_sha1)) {
             //如果没有变化，就直接结束
             return false;
@@ -528,6 +531,7 @@ public class Repository {
         try {
             curr_commit = Commit.getCommit(HEAD);
             another_baranch_instance = Branch.get_Branch(another_branch);
+
             another_commit = Commit.getCommit(another_baranch_instance.ref_UID);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -535,6 +539,7 @@ public class Repository {
 
         /// 先做一些检查
         String split_commit = Commit.find_split_commit(curr_commit, another_commit);
+        System.out.println(split_commit);
         if (split_commit.equals(another_baranch_instance.ref_UID)) {
             System.out.println("Given branch is an ancestor of the current branch.");
             System.exit(0);
@@ -706,7 +711,7 @@ public class Repository {
             throw new RuntimeException(e);
         }
         //拿到当前的祖先
-        Map<String,Integer> LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
+        Map<String, Integer> LoaclpathToInit = Commit.getPathToInit(local_curr_commit);
 
         //第一步 判断远程仓库是否存在
         Remote target_remote = null;
@@ -792,20 +797,27 @@ public class Repository {
         }
 
         Map<String, Integer> remoteBanchToInit = Commit.getPathToInit(remote_commit);
-        Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, local_gitlet_dir );
+        Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, local_gitlet_dir);
         //返回到当前目录暂存这样一个分支
         changeWorkingDirectory(System.getProperty("user.dir"));
-        String new_branch_name=remote_name+"/"+remote_branch_name;
-        Branch new_local_branch = new Branch(new_branch_name, remote_branch.ref_UID);
-        new_local_branch.dump();
-        saveToFile();
+        String fetch_branch_name = remote_name + "/" + remote_branch_name;
+        Branch fetch_branch;
+        if (Branch.has_branch(fetch_branch_name)) {
+            fetch_branch = Branch.get_Branch(fetch_branch_name);
+            fetch_branch.updateUID(remote_branch.ref_UID);
+        } else {
+            fetch_branch = new Branch(fetch_branch_name, remote_branch.ref_UID);
 
+        }
+
+        fetch_branch.dump();
+        saveToFile();
     }
 
     public void pull(String remote_name, String remote_branch_name) {
         validateIsInitialized();
         fetch(remote_name, remote_branch_name);
-        merge(remote_name+"/"+remote_branch_name);
+        merge(remote_name + "/" + remote_branch_name);
         saveToFile();
 
     }

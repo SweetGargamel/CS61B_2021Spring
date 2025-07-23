@@ -33,7 +33,9 @@ cd D2
 java -cp .. gitlet.Main init
 java -cp .. gitlet.Main add-remote R1 ../D1/.gitlet
 java -cp .. gitlet.Main fetch R1 master
+
 java -cp .. gitlet.Main reset "$R1_TWO_FILES_HASH"
+
 echo "And yet another wug." > h.txt
 java -cp .. gitlet.Main add h.txt
 java -cp .. gitlet.Main commit "Add h"
@@ -48,6 +50,7 @@ cd ..
 
 # === Part 4: Pull the new commit from D1 into D2 ===
 cd D2
+
 java -cp .. gitlet.Main pull R1 master
 java -cp .. gitlet.Main log
 cd ..

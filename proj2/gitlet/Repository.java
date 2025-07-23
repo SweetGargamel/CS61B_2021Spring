@@ -745,6 +745,9 @@ public class Repository {
                 changeWorkingDirectory(target_remote.remote_path);
 
                 remote_branch.updateUID(this.HEAD);
+                if(remote_repo.now_branch.equals(remote_branch.name)) {
+                    remote_repo.HEAD = this.HEAD
+                }
             }
         } else {
             changeWorkingDirectory(System.getProperty("user.dir"));
@@ -752,8 +755,11 @@ public class Repository {
             Remote.fetchFileBetweenRepos(LoaclpathToInit, curr_gitlet_dir, remote_gitlet_dir);
             changeWorkingDirectory(target_remote.remote_path);
             remote_branch = new Branch(remote_branch_name, this.HEAD);
+
         }
         remote_branch.dump();
+        System.out.println(this.HEAD);
+
 
         remote_repo.saveToFile();
         changeWorkingDirectory(System.getProperty("user.dir"));

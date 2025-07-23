@@ -746,7 +746,7 @@ public class Repository {
 
                 remote_branch.updateUID(this.HEAD);
                 if(remote_repo.now_branch.equals(remote_branch.name)) {
-                    remote_repo.HEAD = this.HEAD
+                    remote_repo.HEAD = this.HEAD;
                 }
             }
         } else {

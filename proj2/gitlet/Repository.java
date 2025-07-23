@@ -42,7 +42,7 @@ public class Repository {
      */
     public static File COMMIT_DIR = join(GITLET_DIR, "COMMIT");
     public static File BLOB_DIR = join(GITLET_DIR, "BLOB");
-    public static File REFS_DIR = join(GITLET_DIR, "REFS");
+    public static File REFS_FILE = join(GITLET_DIR, "REFS");
     public static File REMOTE_DIR = join(GITLET_DIR, "REMOTE");
 
     /**
@@ -60,12 +60,14 @@ public class Repository {
     private Stage stage;
     private String now_branch;
 
-    public static void changeWorkingDirectory(String gitlet_dir) {
-        changeWorkingDirectory(new File(gitlet_dir));
-    }
-
-    public static void changeWorkingDirectory(File gitlet_dir) {
-        GITLET_DIR = gitlet_dir;
+    public static void changeWorkingDirectory(String cwdPath) {
+        GITLET_DIR = null;
+        if(cwdPath.endsWith(".gitlet")) {
+            GITLET_DIR = new File(cwdPath);
+        }else{
+            CWD = new File(cwdPath);
+            GITLET_DIR = join(CWD, ".gitlet");
+        }
         /**
          * The HEAD Path and Stage Path
          */
@@ -77,7 +79,7 @@ public class Repository {
          */
         COMMIT_DIR = join(GITLET_DIR, "COMMIT");
         BLOB_DIR = join(GITLET_DIR, "BLOB");
-        REFS_DIR = join(GITLET_DIR, "REFS");
+        REFS_FILE = join(GITLET_DIR, "REFS");
         REMOTE_DIR = join(GITLET_DIR, "REMOTE");
     }
 
@@ -127,7 +129,6 @@ public class Repository {
             GITLET_DIR.mkdirs();
             COMMIT_DIR.mkdirs();
             BLOB_DIR.mkdirs();
-            REFS_DIR.mkdirs();
             REMOTE_DIR.mkdirs();
 
             Commit init_commit = new Commit();//Create the init commit .
@@ -138,6 +139,7 @@ public class Repository {
 
             this.stage = new Stage();
             this.saveToFile();
+
         }
     }
 
@@ -202,6 +204,7 @@ public class Repository {
 
     public void log() {
         validateIsInitialized();
+
         String curr_UID = HEAD;
         Commit curr_commit;
         while (curr_UID != "") {
@@ -255,7 +258,7 @@ public class Repository {
         validateIsInitialized();
 
         System.out.println("=== Branches ===");
-        for (String branch_name : Branch.getAllBranches()) {
+        for (String branch_name : Branch.getAllBranches().keySet()) {
             if (branch_name.equals(this.now_branch)) {
                 System.out.println("*" + branch_name);
             } else {
@@ -383,13 +386,15 @@ public class Repository {
     }
 
     private boolean restoreFilesToWorking(String filename, String file_sha1) {
-        File file_instance = new File(filename);
-        if (file_instance.exists() && Utils.getFileSha1(file_instance).equals(file_sha1)) {
+        File file_instance = join(CWD,filename);
+        if (file_instance.exists() && Utils.getFileSha1(filename).equals(file_sha1)) {
             //如果没有变化，就直接结束
             return false;
         }
         File store_dir = new File(Repository.BLOB_DIR, file_sha1.substring(0, 2));
         Utils.restrictedDelete(file_instance);
+//        System.out.println(Utils.join(store_dir, file_sha1.substring(2)));
+//        System.out.println(file_instance);
         Utils.copyFile(Utils.join(store_dir, file_sha1.substring(2))
                 , file_instance);
         return true;
@@ -473,7 +478,7 @@ public class Repository {
             System.out.println("Cannot remove the current branch.");
             System.exit(0);
         }
-        for (String b_name : Branch.getAllBranches()) {
+        for (String b_name : Branch.getAllBranches().keySet()) {
             if (b_name.equals(branch_name)) {
                 Branch.removeBranch(b_name);
                 System.exit(0);
@@ -672,7 +677,7 @@ public class Repository {
         validateIsInitialized();
 
         Remote new_remote = new Remote(remote_name, name_of_the_directroy);
-
+        saveToFile();
     }
 
     public void rm_remote(String remote_name) {
@@ -689,10 +694,10 @@ public class Repository {
 
     public void push(String remote_name, String remote_branch_name) {
         validateIsInitialized();
-        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
+        changeWorkingDirectory(System.getProperty("user.dir"));
         //拿到当前的分支名和当前分支
         String local_branch_name = this.now_branch;
-        File curr_gitlet_dir = CWD;
+        File curr_gitlet_dir = GITLET_DIR;
         Commit local_curr_commit = null;
         try {
             local_curr_commit = Commit.getCommit(this.HEAD);
@@ -728,25 +733,31 @@ public class Repository {
                 //如果不存在就退出
                 System.exit(0);
             } else {
+                changeWorkingDirectory(System.getProperty("user.dir"));
+
                 Remote.fetchFileBetweenRepos(LoaclpathToInit, curr_gitlet_dir, remote_gitlet_dir);
+                changeWorkingDirectory(target_remote.remote_path);
+
                 remote_branch.updateUID(this.HEAD);
-                remote_branch.dump();
             }
         } else {
+            changeWorkingDirectory(System.getProperty("user.dir"));
+
             Remote.fetchFileBetweenRepos(LoaclpathToInit, curr_gitlet_dir, remote_gitlet_dir);
+            changeWorkingDirectory(target_remote.remote_path);
             remote_branch = new Branch(remote_branch_name, this.HEAD);
-            remote_branch.dump();
         }
+        remote_branch.dump();
+
         remote_repo.saveToFile();
-        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
+        changeWorkingDirectory(System.getProperty("user.dir"));
 
         this.saveToFile();
     }
 
     public void fetch(String remote_name, String remote_branch_name) {
         validateIsInitialized();
-        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
-
+        changeWorkingDirectory(System.getProperty("user.dir"));
         //第一步 判断远程仓库是否存在
         Remote target_remote = null;
         try {
@@ -761,7 +772,7 @@ public class Repository {
         }
         //第二步判断远程的分支是否存在
 
-        File local_gitlet_dir = CWD;
+        File local_gitlet_dir = GITLET_DIR;
         File remote_gitlet_dir = new File(target_remote.remote_path);
 
         changeWorkingDirectory(target_remote.remote_path);
@@ -770,6 +781,7 @@ public class Repository {
             System.out.println("That remote does not have that branch.");
             System.exit(0);
         }
+
         //第三部拷贝所有文件
 
         Commit remote_commit = null;
@@ -780,14 +792,11 @@ public class Repository {
         }
 
         Map<String, Integer> remoteBanchToInit = Commit.getPathToInit(remote_commit);
-        Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, remote_gitlet_dir );
+        Remote.fetchFileBetweenRepos(remoteBanchToInit, remote_gitlet_dir, local_gitlet_dir );
         //返回到当前目录暂存这样一个分支
-        changeWorkingDirectory(Utils.join(System.getProperty("user.dir"),".gitlet"));
-
+        changeWorkingDirectory(System.getProperty("user.dir"));
         String new_branch_name=remote_name+"/"+remote_branch_name;
         Branch new_local_branch = new Branch(new_branch_name, remote_branch.ref_UID);
-        this.HEAD = new_local_branch.ref_UID;
-        this.now_branch = new_branch_name;
         new_local_branch.dump();
         saveToFile();
 

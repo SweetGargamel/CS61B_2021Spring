@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -230,6 +231,10 @@ class Utils {
         try {
             if(destinationPath.exists()){
                 return;
+            }
+//            System.out.println(destinationPath.getParent());
+            if(!Path.of(destinationPath.getParent()).toFile().exists()){
+                Files.createDirectories(Path.of(destinationPath.getParent()));
             }
             Files.copy(sourcePath.toPath(), destinationPath.toPath());
         } catch (IOException e) {

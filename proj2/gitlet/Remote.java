@@ -17,6 +17,7 @@ public class Remote implements Dumpable {
                 }
             }
         }
+
         this.remote_name = remote_name;
         this.remote_path = remote_path;
         this.dump();
@@ -62,15 +63,15 @@ public class Remote implements Dumpable {
             }
             copySingleCommits(from_gitlet_dir, to_gitlet_dir, commit);
             for (String file_sha1 : curr_commit.getSnapshot().keySet()) {
-                copyBlobFiles(from_gitlet_dir, to_gitlet_dir,curr_commit.getSnapshot().get(file_sha1) );
+                copyBlobFiles(from_gitlet_dir, to_gitlet_dir, curr_commit.getSnapshot().get(file_sha1));
             }
         }
     }
 
-    private static void copySingleCommits(File local_gitlet_dir, File remote_gitlet_dir, String curr_commit) {
+    private static void copySingleCommits(File from_gitlet_dir, File to_gitlet_dir, String curr_commit) {
         Utils.copyFile(
-                Utils.join(local_gitlet_dir, "COMMIT", curr_commit),
-                Utils.join(remote_gitlet_dir, "COMMIT", curr_commit));
+                Utils.join(from_gitlet_dir, "COMMIT", curr_commit),
+                Utils.join(to_gitlet_dir, "COMMIT", curr_commit));
     }
 
     private static void copyBlobFiles(File local_gitlet_dir, File remote_gitlet_dir, String file_sha1) {

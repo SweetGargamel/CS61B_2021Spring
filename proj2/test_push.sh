@@ -11,7 +11,6 @@
 # ==============================================================================
 
 # To run this script step-by-step, press Enter at each prompt.
-trap 'read -p "EXECUTE: [$BASH_COMMAND] - Press Enter..."' DEBUG
 
 # Set up the first repository (D1) to act as the remote
 mkdir -p D1
@@ -46,6 +45,7 @@ java -cp .. gitlet.Main commit "Add k in repo 2"
 java -cp .. gitlet.Main log
 
 # Add D1 as a remote, fetch from it, and check out its master branch
+
 java -cp .. gitlet.Main add-remote R1 ../D1/.gitlet
 java -cp .. gitlet.Main fetch R1 master
 java -cp .. gitlet.Main checkout R1/master
@@ -60,6 +60,8 @@ java -cp .. gitlet.Main reset "$R1_TWO_FILES_HASH"
 echo "A third wug." > h.txt
 java -cp .. gitlet.Main add h.txt
 java -cp .. gitlet.Main commit "Add h"
+trap 'read -p "EXECUTE: [$BASH_COMMAND] - Press Enter..."' DEBUG
+
 java -cp .. gitlet.Main log
 java -cp .. gitlet.Main push R1 master
 cd ..

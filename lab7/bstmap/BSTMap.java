@@ -157,10 +157,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             //case2 two child
             BSTNode tmp = curr_node;
 
-            curr_node = getMin(tmp);
-            curr_node.left = removeMinHelper(tmp.left);
-            curr_node.right = tmp.right;
-            curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
+            curr_node = getMin(tmp.right);
+            curr_node.right = removeMinHelper(tmp.right);
+            curr_node.left = tmp.left;
 
         } else if (curr_node.key.compareTo(key) > 0) {
             return removeHelper(key, curr_node.left);
@@ -208,16 +207,28 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     public static void main(String[] args) {
-        BSTMap<String, String> map = new BSTMap<String, String>();
-        map.put("D", "E");
-        map.put("C", "D");
-        map.put("E", "F");
-        map.put("A", "B");
-        map.put("B", "C");
-        map.put("F", "G");
-        map.printInOrder();
-        System.out.println(map.get("B"));
-        System.out.println(map.remove("D"));
+        BSTMap<Integer, Integer> map = new BSTMap<>();
+        map.put(8,8);
+        map.put(4,4);
+        map.put(2,2);
+        map.put(1,1);
+        map.put(3,3);
+        map.put(6,6);
+        map.put(7,7);
+        map.put(5,5);
+
+
+        map.put(12,12);
+        map.put(10,10);
+        map.put(9,9);
+        map.put(11,11);
+        map.put(14,14);
+        map.put(15,15);
+        map.put(13,13);
+
+        map.remove(8);
+        map.remove(9);
+
         map.printInOrder();
     }
 }

@@ -6,7 +6,6 @@ import java.util.*;
 
 public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private BSTNode root;
-    private int size;
 
     private class BSTNode {
         public K key;
@@ -36,7 +35,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public void clear() {
-        this.size = 0;
         this.root = null;
     }
 
@@ -67,7 +65,12 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public int size() {
-        return size;
+        return sizeOfNode(root);
+    }
+
+    private int sizeOfNode(BSTNode node) {
+        return node == null ? 0 : node.size;
+
     }
 
     @Override
@@ -77,17 +80,17 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     private BSTNode putHelper(K key, V value, BSTNode curr_node) {
         if (curr_node == null) {
-            this.size++;
 
             return new BSTNode(key, value, 1);
         }
         if (curr_node.key.compareTo(key) == 0) {
             curr_node.value = value;
-        }else if (curr_node.key.compareTo(key) > 0) {
+        } else if (curr_node.key.compareTo(key) > 0) {
             curr_node.left = putHelper(key, value, curr_node.left);
-        }else {
+        } else {
             curr_node.right = putHelper(key, value, curr_node.right);
         }
+        curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
         return curr_node;
     }
 
@@ -111,30 +114,86 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public V remove(K key) {
+        if (key == null) {
+            return null;
+        }
+        if (containsKey(key)) {
+            V value = get(key);
+            this.root = removeHelper(key, root);
+            return value;
+        }
         return null;
     }
 
     @Override
     public V remove(K key, V value) {
+        if (key == null) {
+            return null;
+        }
+        if (get(key).equals(value)) {
+            this.root = removeHelper(key, root);
+
+        }
         return null;
     }
 
-    private static class BSTMapIterator implements Iterator {
-
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Object next() {
+    private BSTNode removeHelper(K key, BSTNode curr_node) {
+        if (curr_node == null) {
             return null;
         }
+        if (curr_node.key.compareTo(key) == 0) {
+
+            //case1 no child
+            if (curr_node.left == null && curr_node.right == null) {
+                return null;
+            }
+            //case2 one child
+            if (curr_node.left == null && curr_node.right != null) {
+                return curr_node.right;
+            }
+            if (curr_node.right == null && curr_node.left == null) {
+                return curr_node.left;
+            }
+
+            //case2 two child
+            BSTNode tmp = curr_node;
+
+            curr_node = getMin(tmp);
+            curr_node.left = removeHelper(key, curr_node.left);
+            curr_node.right = tmp.right;
+            curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
+
+
+        } else if (curr_node.key.compareTo(key) > 0) {
+            return removeHelper(key, curr_node.left);
+        } else {
+            return removeHelper(key, curr_node.right);
+        }
+        curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
+        return curr_node;
+
     }
+
+    private BSTNode getMin(BSTNode curr_node) {
+        if (curr_node.left == null) {
+            return curr_node;
+        }
+        return getMin(curr_node.left);
+    }
+
+    private BSTNode removeMinHelper(BSTNode curr_node) {
+        if (curr_node.left == null) {
+            return curr_node.right;
+        }
+        curr_node.left = removeMinHelper(curr_node.left);
+        curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
+        return curr_node;
+    }
+
 
     @Override
     public Iterator iterator() {
-        throw new UnsupportedOperationException();
+        return keySet().iterator();
     }
 
     public void printInOrder() {
@@ -146,7 +205,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return;
         }
         printInOrder(curr_node.left);
-        System.out.println(curr_node.key + " "+curr_node.value);
+        System.out.println(curr_node.key + " " + curr_node.value);
         printInOrder(curr_node.right);
     }
 
@@ -158,6 +217,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         map.put("A", "B");
         map.put("B", "C");
         map.put("F", "G");
+        map.printInOrder();
+        System.out.println(map.get("B"));
+        System.out.println(map.remove("D"));
         map.printInOrder();
     }
 }

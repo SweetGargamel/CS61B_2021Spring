@@ -142,16 +142,15 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return null;
         }
         if (curr_node.key.compareTo(key) == 0) {
-
             //case1 no child
-            if (curr_node.left == null && curr_node.right == null) {
+            if (curr_node.left == null && curr_node.right != null) {
                 return null;
             }
             //case2 one child
             if (curr_node.left == null && curr_node.right != null) {
                 return curr_node.right;
             }
-            if (curr_node.right == null && curr_node.left == null) {
+            if (curr_node.right == null && curr_node.left != null) {
                 return curr_node.left;
             }
 
@@ -159,10 +158,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             BSTNode tmp = curr_node;
 
             curr_node = getMin(tmp);
-            curr_node.left = removeHelper(key, curr_node.left);
+            curr_node.left = removeMinHelper(tmp.left);
             curr_node.right = tmp.right;
             curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
-
 
         } else if (curr_node.key.compareTo(key) > 0) {
             return removeHelper(key, curr_node.left);

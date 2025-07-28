@@ -95,7 +95,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     @Override
-    public Set keySet() {
+    public Set<K> keySet() {
         Set keySet = new HashSet();
         Queue<BSTNode> queue = new LinkedList<BSTNode>();
         queue.add(root);
@@ -162,9 +162,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             curr_node.left = tmp.left;
 
         } else if (curr_node.key.compareTo(key) > 0) {
-            return removeHelper(key, curr_node.left);
+            curr_node.left = removeHelper(key, curr_node.left);
         } else {
-            return removeHelper(key, curr_node.right);
+            curr_node.right = removeHelper(key, curr_node.right);
         }
         curr_node.size = 1 + sizeOfNode(curr_node.left) + sizeOfNode(curr_node.right);
         return curr_node;
@@ -189,7 +189,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
 
     @Override
-    public Iterator iterator() {
+    public Iterator<K> iterator() {
         return keySet().iterator();
     }
 
@@ -226,8 +226,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         map.put(15,15);
         map.put(13,13);
 
-        map.remove(8);
-        map.remove(9);
+        map.remove(10);
 
         map.printInOrder();
     }

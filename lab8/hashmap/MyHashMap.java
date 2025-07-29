@@ -1,9 +1,8 @@
 package hashmap;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import jh61b.junit.In;
+
+import java.util.*;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -83,7 +82,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * OWN BUCKET DATA STRUCTURES WITH THE NEW OPERATOR!
      */
     protected Collection<Node> createBucket() {
-        return null;
+        return new ArrayList<Node>();
     }
 
     /**
@@ -123,7 +122,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
     @Override
     public V get(K key) {
-        int index = key.hashCode();
+        int index=getIndexHelper(key);
         Collection bucket = buckets[index];
         Iterator<Node> iterator = bucket.iterator();
         Node node = null;
@@ -190,11 +189,24 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public V remove(K key) {
-        return null;
+        int index = getIndexHelper(key);
+        Iterator<Node> iterator = buckets[index].iterator();
+        Node node = null;
+        while(iterator.hasNext()) {
+            node = iterator.next();
+            if(node.key.equals(key)) {
+                V value = node.value;
+                buckets[index].remove(node);
+                return value;
+            }
+        }
     }
 
     @Override
     public V remove(K key, V value) {
+        if(containsKey(key)) {
+            return remove(key);
+        }
         return null;
     }
 
@@ -202,4 +214,85 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public Iterator<K> iterator() {
         return keySet().iterator();
     }
+
+//    public static void main(String[] args) {
+//        System.out.println("--- Running MyHashMap Tests ---");
+//
+//        // Test 1: Basic put and get
+//        System.out.println("\n--- Test 1: Basic put and get ---");
+//        MyHashMap<String, Integer> map = new MyHashMapHSBuckets<>();
+//        map.put("apple", 1);
+//        map.put("banana", 2);
+//        map.put("cherry", 3);
+//
+//        System.out.println("Size after 3 puts: " + map.size()); // Expected: 3
+//        System.out.println("Value for 'apple': " + map.get("apple")); // Expected: 1
+//        System.out.println("Value for 'banana': " + map.get("banana")); // Expected: 2
+//        System.out.println("Value for 'grape' (not present): " + map.get("grape")); // Expected: null
+//
+//        // Test 2: Update existing key
+//        System.out.println("\n--- Test 2: Update existing key ---");
+//        map.put("apple", 100);
+//        System.out.println("Size after updating 'apple': " + map.size()); // Expected: 3
+//        System.out.println("New value for 'apple': " + map.get("apple")); // Expected: 100
+//
+//        // Test 3: containsKey
+//        System.out.println("\n--- Test 3: containsKey ---");
+//        System.out.println("Contains 'cherry'? " + map.containsKey("cherry")); // Expected: true
+//        System.out.println("Contains 'date'? " + map.containsKey("date")); // Expected: false
+//
+//        // Test 4: keySet and iterator
+//        System.out.println("\n--- Test 4: keySet and iterator ---");
+//        Set<String> keys = map.keySet();
+//        System.out.println("KeySet: " + keys); // Expected: [apple, banana, cherry] (order may vary)
+//        System.out.println("Iterating through keys:");
+//        for (String key : map) {
+//            System.out.println("Key: " + key + ", Value: " + map.get(key));
+//        }
+//
+//        // Test 5: Resizing
+//        // With initial capacity 16 and load factor 0.75, resize happens when size > 12.
+//        System.out.println("\n--- Test 5: Resizing ---");
+//        MyHashMap<Integer, String> numberMap = new MyHashMap<>(4, 0.75);
+//        System.out.println("Initial capacity: 4. Adding elements to trigger resize.");
+//        numberMap.put(1, "one");
+//        numberMap.put(2, "two");
+//        numberMap.put(3, "three"); // size=3, capacity=4. 3/4 = 0.75. No resize yet.
+//        System.out.println("Size before resize: " + numberMap.size());
+//        numberMap.put(4, "four"); // size=4, capacity=4. 4/4 > 0.75. Resize should trigger.
+//        System.out.println("Size after resize: " + numberMap.size()); // Expected: 4
+//        System.out.println("Value for key 1 after resize: " + numberMap.get(1)); // Expected: one
+//        System.out.println("Value for key 2 after resize: " + numberMap.get(2)); // Expected: two
+//        System.out.println("Value for key 3 after resize: " + numberMap.get(3)); // Expected: three
+//        System.out.println("Value for key 4 after resize: " + numberMap.get(4)); // Expected: four
+//
+//        // Add more to confirm it's working
+//        numberMap.put(5, "five");
+//        System.out.println("Value for key 5 after resize: " + numberMap.get(5)); // Expected: five
+//
+//
+//        // Test 6: clear
+//        System.out.println("\n--- Test 6: clear ---");
+//        System.out.println("Size before clear: " + map.size()); // Expected: 3
+//        map.clear();
+//        System.out.println("Size after clear: " + map.size()); // Expected: 0
+//        System.out.println("Contains 'apple' after clear? " + map.containsKey("apple")); // Expected: false
+//        System.out.println("Value for 'banana' after clear: " + map.get("banana")); // Expected: null
+//
+//        // Test 7: remove (currently unsupported)
+//        System.out.println("\n--- Test 7: remove (when implemented) ---");
+//        System.out.println("The remove() methods are not implemented yet.");
+//        /*
+//        // When you implement remove, you can use these tests:
+//        MyHashMap<String, Integer> removeMap = new MyHashMap<>();
+//        removeMap.put("one", 1);
+//        removeMap.put("two", 2);
+//        System.out.println("Value for 'one' before remove: " + removeMap.get("one"));
+//        removeMap.remove("one");
+//        System.out.println("Value for 'one' after remove: " + removeMap.get("one")); // Expected: null
+//        System.out.println("Size after remove: " + removeMap.size()); // Expected: 1
+//        */
+//
+//        System.out.println("\n--- All Tests Finished ---");
+//    }
 }
